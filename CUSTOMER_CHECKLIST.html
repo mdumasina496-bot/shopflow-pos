@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ShopFlow POS — Customer Setup Checklist</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 13px; color: #111; background: white; padding: 20px; max-width: 900px; margin: 0 auto; }
+
+  .cover { text-align: center; padding: 40px 20px; border-bottom: 3px solid #0A6C6B; margin-bottom: 30px; }
+  .cover img { width: 80px; margin-bottom: 12px; }
+  .cover h1 { font-size: 26px; color: #0A6C6B; margin-bottom: 6px; }
+  .cover h2 { font-size: 16px; color: #555; font-weight: normal; margin-bottom: 16px; }
+  .cover .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 500px; margin: 0 auto; text-align: left; }
+  .cover .meta-field { border-bottom: 1px solid #ccc; padding: 6px 4px; }
+  .cover .meta-label { font-size: 10px; color: #888; text-transform: uppercase; }
+  .cover .meta-value { font-size: 13px; min-height: 20px; }
+
+  .section { margin-bottom: 28px; page-break-inside: avoid; }
+  .section-header { background: #0A6C6B; color: white; padding: 8px 14px; border-radius: 6px 6px 0 0; font-size: 14px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+  .section-header .section-num { background: rgba(255,255,255,0.25); padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+  .section-body { border: 1px solid #ddd; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; }
+
+  .item { display: grid; grid-template-columns: 24px 1fr auto; gap: 8px; align-items: start; padding: 9px 14px; border-bottom: 1px solid #f0f0f0; }
+  .item:last-child { border-bottom: none; }
+  .item.highlight { background: #fffbf0; }
+  .item.note { background: #f0f8ff; }
+  .checkbox { width: 16px; height: 16px; border: 2px solid #0A6C6B; border-radius: 3px; margin-top: 1px; flex-shrink: 0; }
+  .item-label { font-size: 13px; line-height: 1.5; }
+  .item-label strong { color: #0A6C6B; }
+  .item-label .sub { font-size: 11px; color: #777; margin-top: 2px; }
+  .answer-line { border-bottom: 1px solid #bbb; min-width: 200px; height: 22px; font-size: 12px; color: #333; padding: 2px 4px; }
+  .answer-box { border: 1px solid #bbb; border-radius: 4px; min-width: 200px; min-height: 50px; padding: 4px; font-size: 12px; }
+  .answer-yn { display: flex; gap: 16px; align-items: center; }
+  .answer-yn label { display: flex; align-items: center; gap: 5px; font-size: 13px; }
+  .answer-yn input[type=checkbox] { width: 14px; height: 14px; }
+
+  .subsection { padding: 6px 14px; background: #f8f8f8; font-size: 11px; font-weight: bold; color: #555; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #eee; }
+
+  .table-input { width: 100%; border-collapse: collapse; margin: 0; }
+  .table-input th { background: #e8f5f5; color: #0A6C6B; font-size: 11px; padding: 7px 10px; text-align: left; border: 1px solid #ddd; }
+  .table-input td { padding: 6px 10px; border: 1px solid #ddd; font-size: 12px; }
+  .table-input td input-line { display: block; border-bottom: 1px dashed #bbb; min-height: 18px; }
+
+  .note-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 10px 14px; margin: 4px 0; font-size: 12px; color: #555; }
+  .tip { background: #e8f5f5; border-left: 4px solid #0A6C6B; padding: 8px 14px; font-size: 11px; color: #0A6C6B; margin: 4px 0; }
+
+  .page-break { page-break-before: always; }
+
+  .footer { text-align: center; padding: 20px; border-top: 2px solid #0A6C6B; margin-top: 30px; color: #888; font-size: 11px; }
+
+  @media print {
+    body { padding: 10px; }
+    .section { page-break-inside: avoid; }
+    .cover { page-break-after: always; }
+    .no-print { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <h1>ShopFlow POS</h1>
+  <h2>Customer Setup Checklist</h2>
+  <p style="color:#888;font-size:12px;margin-bottom:20px;">Complete this form during your customer visit. All information collected here will be used to configure the system before go-live.</p>
+  <div class="meta">
+    <div class="meta-field"><div class="meta-label">Visit Date</div><div class="meta-value">&nbsp;</div></div>
+    <div class="meta-field"><div class="meta-label">Completed By</div><div class="meta-value">&nbsp;</div></div>
+    <div class="meta-field"><div class="meta-label">Customer / Business Name</div><div class="meta-value">&nbsp;</div></div>
+    <div class="meta-field"><div class="meta-label">Contact Person</div><div class="meta-value">&nbsp;</div></div>
+    <div class="meta-field"><div class="meta-label">Contact Phone</div><div class="meta-value">&nbsp;</div></div>
+    <div class="meta-field"><div class="meta-label">Go-Live Target Date</div><div class="meta-value">&nbsp;</div></div>
+  </div>
+</div>
+
+
+<!-- SECTION 1: BUSINESS INFORMATION -->
+<div class="section">
+  <div class="section-header">1 — Business Information <span class="section-num">Settings → Store Info</span></div>
+  <div class="section-body">
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Trading / Store Name</strong><div class="sub">As it should appear on receipts and reports</div></div><div class="answer-line"></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Physical Address</strong></div><div class="answer-line"></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Store Phone Number</strong></div><div class="answer-line"></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Email Address</strong></div><div class="answer-line"></div></div>
+    <div class="item highlight"><div class="checkbox"></div><div class="item-label"><strong>VAT Registered?</strong><div class="sub">If yes, get the VAT number</div></div><div class="answer-yn"><label><input type="checkbox"> Yes — VAT#: ___________________</label><label><input type="checkbox"> No</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Receipt Footer Message</strong><div class="sub">E.g. "Thank you for your business! Come again."</div></div><div class="answer-line"></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Order Number Prefix</strong><div class="sub">E.g. BUT for butchery, BOT for bottle, ORD generic</div></div><div class="answer-line"></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Is this part of a franchise / group?</strong><div class="sub">Royalty reports may be needed</div></div><div class="answer-yn"><label><input type="checkbox"> Yes — Franchise Name: _______________</label><label><input type="checkbox"> No</label></div></div>
+  </div>
+</div>
+
+
+<!-- SECTION 2: STORE STRUCTURE -->
+<div class="section">
+  <div class="section-header">2 — Store Structure <span class="section-num">Tills, Departments, Branches</span></div>
+  <div class="section-body">
+    <div class="item highlight"><div class="checkbox"></div><div class="item-label"><strong>Type of Business</strong><div class="sub">Tick all that apply</div></div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <label><input type="checkbox"> 🥩 Butchery (buy and go)</label>
+        <label><input type="checkbox"> 🔥 Chisa Nyama / Braai (buy and braai on site)</label>
+        <label><input type="checkbox"> 🍺 Bottle Store / Off-licence</label>
+        <label><input type="checkbox"> 🚗 Deliveries / Online orders</label>
+        <label><input type="checkbox"> 📞 Call orders / Phone orders</label>
+      </div>
+    </div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Number of Branches / Locations</strong></div><div class="answer-line"></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Number of Tills (per branch)</strong><div class="sub">E.g. 2 tills in butchery, 1 till in bottle store</div></div><div class="answer-line"></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Do butchery and bottle store share a till?</strong></div><div class="answer-yn"><label><input type="checkbox"> Yes</label><label><input type="checkbox"> No — separate tills</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Is there a dedicated braai / kitchen area?</strong><div class="sub">If yes, a second printer may be needed there</div></div><div class="answer-yn"><label><input type="checkbox"> Yes</label><label><input type="checkbox"> No</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Seating / Tables in chisa nyama area?</strong></div><div class="answer-yn"><label><input type="checkbox"> Yes — Number of tables: ____</label><label><input type="checkbox"> No (standing/takeaway only)</label></div></div>
+  </div>
+</div>
+
+
+<!-- SECTION 3: STAFF & USERS -->
+<div class="section">
+  <div class="section-header">3 — Staff & Users <span class="section-num">Users + Attendance + Shifts</span></div>
+  <div class="section-body">
+    <div class="note-box">List every staff member who will use the system. Each person needs a username and password.</div>
+    <div class="subsection">Staff List</div>
+    <table class="table-input" style="margin:0;">
+      <tr>
+        <th style="width:22%">Full Name</th>
+        <th style="width:18%">Role (Owner / Manager / Cashier / Braai)</th>
+        <th style="width:18%">Department (Butchery / Bottle / Both)</th>
+        <th style="width:18%">Preferred Username</th>
+        <th style="width:12%">Temporary Password</th>
+        <th style="width:12%">Access Attendance?</th>
+      </tr>
+      <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>
+    </table>
+    <div class="subsection" style="margin-top:1px;">Shifts</div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Store Opening Time</strong></div><div class="answer-line"></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Store Closing Time</strong></div><div class="answer-line"></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Shift Structure</strong><div class="sub">E.g. Morning 06:00–14:00 / Afternoon 14:00–22:00 / Full Day 06:00–22:00</div></div><div class="answer-box"></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Do cashiers rotate tills between shifts?</strong></div><div class="answer-yn"><label><input type="checkbox"> Yes</label><label><input type="checkbox"> No — same cashier, same till</label></div></div>
+  </div>
+</div>
+
+
+<!-- PAGE BREAK -->
+<div class="page-break"></div>
+
+
+<!-- SECTION 4: PRODUCTS — BUTCHERY -->
+<div class="section">
+  <div class="section-header">4A — Products: Butchery <span class="section-num">Inventory → Butchery Products</span></div>
+  <div class="section-body">
+    <div class="note-box">List all meat and butchery products. If they have an existing price list or spreadsheet — get a copy, it saves time.</div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Do they buy whole carcasses and cut in-store?</strong></div><div class="answer-yn"><label><input type="checkbox"> Yes — whole carcasses</label><label><input type="checkbox"> Yes — primal cuts</label><label><input type="checkbox"> No — ready-made retail cuts only</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Do products have barcodes / SKU codes already?</strong></div><div class="answer-yn"><label><input type="checkbox"> Yes</label><label><input type="checkbox"> No — we will create codes</label></div></div>
+    <div class="tip">💡 TIP: Ask for their current price board or price list and photograph it.</div>
+    <table class="table-input" style="margin:0;">
+      <tr>
+        <th style="width:5%">#</th>
+        <th style="width:28%">Product Name</th>
+        <th style="width:12%">Category (Beef/Chicken/Pork/Lamb etc.)</th>
+        <th style="width:10%">Unit (kg / each)</th>
+        <th style="width:13%">Selling Price (R)</th>
+        <th style="width:13%">Cost Price (R)</th>
+        <th style="width:10%">Current Stock</th>
+        <th style="width:9%">Min Stock</th>
+      </tr>
+      <tr><td>1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>4</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>5</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>6</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>7</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>8</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>9</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>10</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>11</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>12</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>13</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>14</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>15</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </table>
+    <div class="note-box" style="margin-top:6px;">📎 If more than 15 products — attach a separate spreadsheet or photograph the price board.</div>
+  </div>
+</div>
+
+
+<!-- SECTION 4B: PRODUCTS — BOTTLE STORE -->
+<div class="section">
+  <div class="section-header">4B — Products: Bottle Store <span class="section-num">Inventory → Bottle Store Products</span></div>
+  <div class="section-body">
+    <div class="tip">💡 TIP: Bottle stores often have 50–200+ products. Ask for the supplier invoices or price list spreadsheet — do not try to write them all here.</div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Approximately how many products?</strong></div><div class="answer-line"></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Do they have existing barcodes on products?</strong></div><div class="answer-yn"><label><input type="checkbox"> Yes — barcode scanner needed</label><label><input type="checkbox"> No</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Product categories they stock</strong><div class="sub">Tick all that apply</div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <label><input type="checkbox"> Beer</label>
+        <label><input type="checkbox"> Cider</label>
+        <label><input type="checkbox"> Wine</label>
+        <label><input type="checkbox"> Spirits</label>
+        <label><input type="checkbox"> RTD (Ready to Drink)</label>
+        <label><input type="checkbox"> Soft Drinks</label>
+        <label><input type="checkbox"> Water</label>
+        <label><input type="checkbox"> Mixers</label>
+        <label><input type="checkbox"> Cigarettes</label>
+        <label><input type="checkbox"> Other: ___________</label>
+      </div>
+    </div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Get a copy of their current product / price list</strong></div><div class="answer-yn"><label><input type="checkbox"> Got spreadsheet/file</label><label><input type="checkbox"> Got photos of price board</label><label><input type="checkbox"> Supplier invoice obtained</label></div></div>
+  </div>
+</div>
+
+
+<!-- SECTION 5: CHISA NYAMA / EXTRAS -->
+<div class="section">
+  <div class="section-header">5 — Chisa Nyama / Braai Extras <span class="section-num">Settings → Menu & Extras</span></div>
+  <div class="section-body">
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Do they sell extras / sides?</strong><div class="sub">Pap, achaar, chakalaka, rolls, sauces, salads etc.</div></div><div class="answer-yn"><label><input type="checkbox"> Yes</label><label><input type="checkbox"> No</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Do they charge a braai service fee?</strong><div class="sub">A flat fee charged when staff braai the meat for the customer</div></div><div class="answer-yn"><label><input type="checkbox"> Yes — Fee amount: R ______</label><label><input type="checkbox"> No</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Should the braai area receive a printed order ticket?</strong></div><div class="answer-yn"><label><input type="checkbox"> Yes — need second printer</label><label><input type="checkbox"> No</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>What label do they use for the braai area?</strong><div class="sub">This prints on the braai ticket header. E.g. "Braai Area", "Kitchen", "Grill"</div></div><div class="answer-line"></div></div>
+    <table class="table-input" style="margin:8px 0 0 0;">
+      <tr>
+        <th style="width:5%">#</th>
+        <th style="width:35%">Extra / Side Item</th>
+        <th style="width:20%">Category (Sides / Sauces / Service)</th>
+        <th style="width:15%">Price (R)</th>
+        <th style="width:15%">Cost Price (R)</th>
+        <th style="width:10%">Print to Braai?</th>
+      </tr>
+      <tr><td>1</td><td>Pap (Small)</td><td>Sides</td><td></td><td></td><td>Y / N</td></tr>
+      <tr><td>2</td><td>Pap (Large)</td><td>Sides</td><td></td><td></td><td>Y / N</td></tr>
+      <tr><td>3</td><td>Achaar</td><td>Condiments</td><td></td><td></td><td>Y / N</td></tr>
+      <tr><td>4</td><td>Chakalaka</td><td>Condiments</td><td></td><td></td><td>Y / N</td></tr>
+      <tr><td>5</td><td>Rolls</td><td>Sides</td><td></td><td></td><td>Y / N</td></tr>
+      <tr><td>6</td><td>Tomato & Onion</td><td>Sides</td><td></td><td></td><td>Y / N</td></tr>
+      <tr><td>7</td><td>Braai Service</td><td>Service</td><td></td><td>0</td><td>Y</td></tr>
+      <tr><td>8</td><td></td><td></td><td></td><td></td><td>Y / N</td></tr>
+      <tr><td>9</td><td></td><td></td><td></td><td></td><td>Y / N</td></tr>
+      <tr><td>10</td><td></td><td></td><td></td><td></td><td>Y / N</td></tr>
+    </table>
+  </div>
+</div>
+
+
+<!-- PAGE BREAK -->
+<div class="page-break"></div>
+
+
+<!-- SECTION 6: OPERATIONS -->
+<div class="section">
+  <div class="section-header">6 — Daily Operations <span class="section-num">Cashup, Floats, Petty Cash</span></div>
+  <div class="section-body">
+    <div class="item highlight"><div class="checkbox"></div><div class="item-label"><strong>What is the standard opening till float?</strong><div class="sub">The cash amount placed in the till at the start of each shift</div></div><div class="answer-yn"><span>R ______________</span></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>How often do they do a cashup?</strong></div>
+      <div class="answer-yn">
+        <label><input type="checkbox"> Per shift</label>
+        <label><input type="checkbox"> End of day</label>
+        <label><input type="checkbox"> Both</label>
+      </div>
+    </div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Do they use petty cash?</strong><div class="sub">Store money used for small purchases during the day</div></div><div class="answer-yn"><label><input type="checkbox"> Yes — Approx daily amount: R ______</label><label><input type="checkbox"> No</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Who is allowed to approve discounts?</strong></div><div class="answer-yn"><label><input type="checkbox"> Manager only</label><label><input type="checkbox"> Owner only</label><label><input type="checkbox"> Any cashier</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Maximum discount % cashier can give without manager approval</strong></div><div class="answer-line"></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Do they give credit to any customers?</strong><div class="sub">Buying now, paying later</div></div><div class="answer-yn"><label><input type="checkbox"> Yes</label><label><input type="checkbox"> No</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Payment methods accepted</strong></div>
+      <div class="answer-yn">
+        <label><input type="checkbox"> Cash</label>
+        <label><input type="checkbox"> Card (tap/swipe)</label>
+        <label><input type="checkbox"> EFT</label>
+        <label><input type="checkbox"> SnapScan / Zapper</label>
+        <label><input type="checkbox"> Other: ___________</label>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- SECTION 7: SUPPLIERS & STOCK -->
+<div class="section">
+  <div class="section-header">7 — Suppliers & Stock Control <span class="section-num">GRV + Stock Count + Wastage</span></div>
+  <div class="section-body">
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>How often do they receive stock?</strong></div><div class="answer-yn"><label><input type="checkbox"> Daily</label><label><input type="checkbox"> 2–3× week</label><label><input type="checkbox"> Weekly</label><label><input type="checkbox"> As needed</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>How often do they do a stock count?</strong></div><div class="answer-yn"><label><input type="checkbox"> Daily</label><label><input type="checkbox"> Weekly</label><label><input type="checkbox"> Monthly</label><label><input type="checkbox"> Never currently</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Do they want printable blank stock count sheets?</strong><div class="sub">Staff count manually on paper, then capture into system</div></div><div class="answer-yn"><label><input type="checkbox"> Yes</label><label><input type="checkbox"> No — capture directly on tablet</label></div></div>
+    <div class="subsection">Supplier List</div>
+    <table class="table-input">
+      <tr>
+        <th style="width:5%">#</th>
+        <th style="width:30%">Supplier Name</th>
+        <th style="width:25%">Contact Person</th>
+        <th style="width:20%">Phone</th>
+        <th style="width:20%">What They Supply</th>
+      </tr>
+      <tr><td>1</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>2</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>3</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>4</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>5</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>6</td><td></td><td></td><td></td><td></td></tr>
+    </table>
+  </div>
+</div>
+
+
+<!-- SECTION 8: REPORTING NEEDS -->
+<div class="section">
+  <div class="section-header">8 — Reporting Requirements <span class="section-num">Reports Module</span></div>
+  <div class="section-body">
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>What reports do they currently use / need?</strong><div class="sub">Tick all that apply</div></div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <label><input type="checkbox"> Daily sales summary</label>
+        <label><input type="checkbox"> Stock variance report</label>
+        <label><input type="checkbox"> Gross profit / food cost %</label>
+        <label><input type="checkbox"> Cashup report per till</label>
+        <label><input type="checkbox"> Wastage / loss report</label>
+        <label><input type="checkbox"> Supplier purchases (GRV) report</label>
+        <label><input type="checkbox"> Staff attendance report</label>
+        <label><input type="checkbox"> Customer order history</label>
+        <label><input type="checkbox"> Monthly sales comparison</label>
+        <label><input type="checkbox"> Royalty / management fee report</label>
+      </div>
+    </div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Who receives reports?</strong><div class="sub">E.g. owner gets daily summary emailed, manager views cashup</div></div><div class="answer-box"></div></div>
+    <div class="item highlight"><div class="checkbox"></div><div class="item-label"><strong>What is their target Food Cost % (FC%)?</strong><div class="sub">Industry standard: butchery 30–40%, bottle store 25–35%</div></div><div class="answer-line"></div></div>
+    <div class="item highlight"><div class="checkbox"></div><div class="item-label"><strong>What is their target Gross Profit % (GP%)?</strong></div><div class="answer-line"></div></div>
+  </div>
+</div>
+
+
+<!-- SECTION 9: HARDWARE -->
+<div class="section">
+  <div class="section-header">9 — Hardware Assessment <span class="section-num">What they have vs what they need</span></div>
+  <div class="section-body">
+    <div class="note-box">ShopFlow POS runs in a browser — no special software needed. Just a device with Chrome or Firefox.</div>
+    <div class="subsection">Existing Hardware</div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Existing devices</strong></div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <label><input type="checkbox"> Windows laptop/PC — How many: ____</label>
+        <label><input type="checkbox"> Android tablet — How many: ____</label>
+        <label><input type="checkbox"> iPad — How many: ____</label>
+        <label><input type="checkbox"> None currently</label>
+      </div>
+    </div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Existing receipt printer?</strong><div class="sub">Get make and model — we need to test print compatibility</div></div><div class="answer-yn"><label><input type="checkbox"> Yes — Make/Model: ___________________</label><label><input type="checkbox"> No</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Existing barcode scanner?</strong></div><div class="answer-yn"><label><input type="checkbox"> Yes — USB / Bluetooth</label><label><input type="checkbox"> No</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Existing cash drawer?</strong></div><div class="answer-yn"><label><input type="checkbox"> Yes</label><label><input type="checkbox"> No</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>WiFi at the store?</strong></div><div class="answer-yn"><label><input type="checkbox"> Yes — reliable</label><label><input type="checkbox"> Yes — unreliable</label><label><input type="checkbox"> No WiFi</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Internet connection type</strong></div><div class="answer-yn"><label><input type="checkbox"> Fibre</label><label><input type="checkbox"> LTE/Mobile data</label><label><input type="checkbox"> ADSL</label><label><input type="checkbox"> None</label></div></div>
+
+    <div class="subsection">Hardware Needed (estimate)</div>
+    <table class="table-input">
+      <tr>
+        <th style="width:40%">Item</th>
+        <th style="width:15%">Quantity</th>
+        <th style="width:20%">Approx Cost (R)</th>
+        <th style="width:25%">Notes</th>
+      </tr>
+      <tr><td>Android tablet (Samsung A-series) or Windows laptop</td><td></td><td>R 2,000–3,500 each</td><td></td></tr>
+      <tr><td>Thermal receipt printer (Epson TM-T20 or similar)</td><td></td><td>R 1,500–2,500 each</td><td></td></tr>
+      <tr><td>Braai area printer (small thermal)</td><td></td><td>R 800–1,500</td><td></td></tr>
+      <tr><td>Barcode / SKU scanner (USB or Bluetooth)</td><td></td><td>R 300–800</td><td></td></tr>
+      <tr><td>Cash drawer</td><td></td><td>R 800–1,500</td><td></td></tr>
+      <tr><td>WiFi router (if not present)</td><td></td><td>R 500–1,500</td><td></td></tr>
+      <tr><td style="font-weight:bold;">TOTAL ESTIMATE</td><td></td><td style="font-weight:bold;"></td><td></td></tr>
+    </table>
+  </div>
+</div>
+
+
+<!-- SECTION 10: REGULAR CUSTOMERS -->
+<div class="section">
+  <div class="section-header">10 — Regular Customers <span class="section-num">Admin Menu → Customers</span></div>
+  <div class="section-body">
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Do they have regular / loyal customers they want to track?</strong></div><div class="answer-yn"><label><input type="checkbox"> Yes</label><label><input type="checkbox"> No</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Do they want a loyalty/points system?</strong><div class="sub">Future feature — note for later development</div></div><div class="answer-yn"><label><input type="checkbox"> Yes</label><label><input type="checkbox"> No</label></div></div>
+    <div class="subsection">Key Regular Customers to Load at Setup</div>
+    <table class="table-input">
+      <tr>
+        <th>Customer Name</th>
+        <th>Phone Number</th>
+        <th>Address (for delivery)</th>
+        <th>Special Notes</th>
+      </tr>
+      <tr><td>&nbsp;</td><td></td><td></td><td></td></tr>
+      <tr><td>&nbsp;</td><td></td><td></td><td></td></tr>
+      <tr><td>&nbsp;</td><td></td><td></td><td></td></tr>
+      <tr><td>&nbsp;</td><td></td><td></td><td></td></tr>
+      <tr><td>&nbsp;</td><td></td><td></td><td></td></tr>
+    </table>
+  </div>
+</div>
+
+
+<!-- SECTION 11: SPECIAL NOTES -->
+<div class="section">
+  <div class="section-header">11 — Special Requirements & Notes <span class="section-num">Anything not covered above</span></div>
+  <div class="section-body">
+    <div style="padding:14px;">
+      <p style="color:#888;font-size:12px;margin-bottom:10px;">Use this space for anything unique about this customer's setup that needs special attention.</p>
+      <div style="border:1px solid #ddd;border-radius:6px;min-height:120px;padding:10px;"></div>
+    </div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Any existing POS system being replaced?</strong><div class="sub">If yes, ask if data can be exported — product list, customers, etc.</div></div><div class="answer-yn"><label><input type="checkbox"> Yes — System name: ___________________</label><label><input type="checkbox"> No</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Does the owner want to access the system remotely?</strong><div class="sub">E.g. check reports from home — requires online hosting</div></div><div class="answer-yn"><label><input type="checkbox"> Yes — online hosting needed</label><label><input type="checkbox"> No — local only is fine</label></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Third-party delivery platforms used?</strong></div>
+      <div class="answer-yn">
+        <label><input type="checkbox"> Uber Eats</label>
+        <label><input type="checkbox"> Mr D Food</label>
+        <label><input type="checkbox"> Own delivery</label>
+        <label><input type="checkbox"> WhatsApp orders</label>
+        <label><input type="checkbox"> None</label>
+      </div>
+    </div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Agreed go-live date</strong></div><div class="answer-line"></div></div>
+    <div class="item"><div class="checkbox"></div><div class="item-label"><strong>Training session booked for</strong></div><div class="answer-line"></div></div>
+  </div>
+</div>
+
+
+<!-- SIGNATURE -->
+<div class="section">
+  <div class="section-header">Sign-off</div>
+  <div class="section-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;padding:20px;">
+      <div>
+        <p style="font-size:12px;color:#555;margin-bottom:6px;">Completed by (ShopFlow Representative)</p>
+        <div style="border-bottom:1px solid #333;margin-bottom:4px;height:30px;"></div>
+        <p style="font-size:11px;color:#888;">Signature &amp; Date</p>
+      </div>
+      <div>
+        <p style="font-size:12px;color:#555;margin-bottom:6px;">Confirmed by (Customer)</p>
+        <div style="border-bottom:1px solid #333;margin-bottom:4px;height:30px;"></div>
+        <p style="font-size:11px;color:#888;">Signature &amp; Date</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  ShopFlow POS — Powered by ZeHuWo Pty Ltd &nbsp;|&nbsp; Customer Setup Checklist &nbsp;|&nbsp; Confidential
+</div>
+
+<!-- Print button (hidden when printing) -->
+<div class="no-print" style="text-align:center;margin:20px 0;">
+  <button onclick="window.print()" style="padding:12px 32px;background:#0A6C6B;color:white;border:none;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;">🖨️ Print Checklist</button>
+</div>
+
+</body>
+</html>
