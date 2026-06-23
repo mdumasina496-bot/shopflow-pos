@@ -5,6 +5,21 @@ import { KEYS, load, save, genId, fmtDate } from '../data'
 const ROLES = ['owner', 'manager', 'cashier']
 const STORES = ['both', 'butchery', 'bottle']
 
+const ALL_MODULES = [
+  { id: 'admin', label: '🏪 Admin Menu' },
+  { id: 'onlineorders', label: '💬 Online Orders' },
+  { id: 'inventory', label: '📦 Inventory' },
+  { id: 'grv', label: '📋 GRV' },
+  { id: 'butchery', label: '🥩 Butchery Cuts' },
+  { id: 'bottle', label: '🍺 Bottle Store' },
+  { id: 'reports', label: '📊 Reports' },
+  { id: 'stockcount', label: '⚖️ Stock Count' },
+  { id: 'manufacturing', label: '🏭 Manufacturing' },
+  { id: 'wastage', label: '🗑️ Wastage Log' },
+  { id: 'fcreport', label: '📈 FC Report' },
+  { id: 'users', label: '👥 Users' },
+]
+
 export default function Users({ user, onBack }) {
   const [users, setUsers] = useState([])
   const [modal, setModal] = useState(null)
@@ -16,13 +31,13 @@ export default function Users({ user, onBack }) {
   const persist = (updated) => { save(KEYS.USERS, updated); setUsers(updated) }
 
   const openAdd = () => {
-    setForm({ username: '', password: '', name: '', role: 'cashier', store: 'butchery', active: true })
+    setForm({ username: '', password: '', name: '', role: 'cashier', store: 'butchery', active: true, allowedModules: [] })
     setShowPwd(true)
     setModal('add')
   }
 
   const openEdit = (u) => {
-    setForm({ ...u, password: '' })
+    setForm({ ...u, password: '', allowedModules: u.allowedModules || [] })
     setShowPwd(false)
     setModal('edit')
   }
@@ -47,6 +62,7 @@ export default function Users({ user, onBack }) {
         name: form.name.trim(),
         role: form.role,
         store: form.store,
+        allowedModules: form.allowedModules || [],
         ...(form.password ? { password: form.password } : {}),
       } : u))
     }
@@ -108,6 +124,26 @@ export default function Users({ user, onBack }) {
 
             {F('role', 'Role', 'text', { options: ROLES })}
             {F('store', 'Store Access', 'text', { options: STORES })}
+
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ fontSize: '12px', color: '#94a3b8', display: 'block', marginBottom: '8px' }}>
+                Module Access <span style={{ color: '#64748b' }}>(leave all unchecked = access all allowed by role)</span>
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                {ALL_MODULES.map(m => {
+                  const checked = (form.allowedModules || []).includes(m.id)
+                  return (
+                    <label key={m.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', padding: '6px 10px', borderRadius: '6px', backgroundColor: checked ? 'rgba(0,196,160,0.1)' : '#0f172a', border: `1px solid ${checked ? '#00C4A0' : '#334155'}` }}>
+                      <input type="checkbox" checked={checked} onChange={e => {
+                        const current = form.allowedModules || []
+                        setForm(f => ({ ...f, allowedModules: e.target.checked ? [...current, m.id] : current.filter(x => x !== m.id) }))
+                      }} style={{ accentColor: '#00C4A0' }} />
+                      <span style={{ fontSize: '12px', color: checked ? '#00C4A0' : '#94a3b8' }}>{m.label}</span>
+                    </label>
+                  )
+                })}
+              </div>
+            </div>
 
             <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
               <button onClick={() => setModal(null)} style={{ flex: 1, padding: '12px', backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', color: '#94a3b8', cursor: 'pointer', fontWeight: '600' }}>Cancel</button>

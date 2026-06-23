@@ -6,18 +6,20 @@ import Shifts from './admin/Shifts'
 import Customers from './admin/Customers'
 import Settings from './admin/Settings'
 import Attendance from './admin/Attendance'
+import ActivityMonitor from './ActivityMonitor'
 
 const SUB_MODULES = [
-  { id: 'orders',     label: '🛒 Orders',         color: '#0A6C6B', roles: ['owner','manager','cashier'], desc: 'Sales, discounts & payments' },
-  { id: 'assign',     label: '👤 Assign',          color: '#1e40af', roles: ['owner','manager'],           desc: 'Assign cashiers & till floats' },
-  { id: 'cashup',     label: '💰 Store Cashup',    color: '#166534', roles: ['owner','manager'],           desc: 'Blind cashup & reconciliation' },
-  { id: 'shifts',     label: '🕐 Shifts',          color: '#7c3aed', roles: ['owner','manager'],           desc: 'Manage work shifts' },
-  { id: 'customers',  label: '👥 Customers',       color: '#b45309', roles: ['owner','manager','cashier'], desc: 'Customer profiles & call orders' },
-  { id: 'settings',   label: '⚙️ Settings',        color: '#374151', roles: ['owner','manager'],           desc: 'System configuration' },
-  { id: 'attendance', label: '📋 Attendance',      color: '#0e7490', roles: ['owner','manager','cashier'], desc: 'Staff clock in / clock out' },
+  { id: 'orders',     label: '🛒 Orders',           color: '#0A6C6B', roles: ['owner','manager','cashier'], desc: 'Sales, discounts & payments' },
+  { id: 'assign',     label: '👤 Assign',            color: '#1e40af', roles: ['owner','manager'],           desc: 'Assign cashiers & till floats' },
+  { id: 'cashup',     label: '💰 Store Cashup',      color: '#166534', roles: ['owner','manager'],           desc: 'Blind cashup & reconciliation' },
+  { id: 'shifts',     label: '🕐 Shifts',            color: '#7c3aed', roles: ['owner','manager'],           desc: 'Manage work shifts' },
+  { id: 'customers',  label: '👥 Customers',         color: '#b45309', roles: ['owner','manager','cashier'], desc: 'Customer profiles & call orders' },
+  { id: 'settings',   label: '⚙️ Settings',          color: '#374151', roles: ['owner','manager'],           desc: 'System configuration' },
+  { id: 'attendance', label: '📋 Attendance',        color: '#0e7490', roles: ['owner','manager','cashier'], desc: 'Staff clock in / clock out' },
+  { id: 'activity',   label: '🔍 Activity Monitor',  color: '#1e1b4b', roles: ['owner'],                    desc: 'All system events with timestamps' },
 ]
 
-const COMPONENT_MAP = { orders: Orders, assign: Assign, cashup: StoreCashup, shifts: Shifts, customers: Customers, settings: Settings, attendance: Attendance }
+const COMPONENT_MAP = { orders: Orders, assign: Assign, cashup: StoreCashup, shifts: Shifts, customers: Customers, settings: Settings, attendance: Attendance, activity: ActivityMonitor }
 
 export default function AdminMenu({ user, onBack }) {
   const [active, setActive] = useState(null)

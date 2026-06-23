@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import Shell from '../components/Shell'
-import { KEYS, load, save, R, genId, fmtDate, today } from '../data'
+import { KEYS, load, save, R, genId, fmtDate, today, logActivity } from '../data'
 
 export default function ButcheryCuts({ user, onBack }) {
   const [records, setRecords] = useState([])
@@ -12,7 +12,9 @@ export default function ButcheryCuts({ user, onBack }) {
   const [date, setDate] = useState(today())
   const [notes, setNotes] = useState('')
   const [cuts, setCuts] = useState([])
-  const [cutForm, setCutForm] = useState({ productId: '', name: '', weight: '' })
+  const [cutForm, setCutForm] = useState({ productId: '', name: '', weight: '', sellingPrice: '' })
+  const [rawCostPerKg, setRawCostPerKg] = useState('')
+  const [activeTab, setActiveTab] = useState('cuts')
 
   useEffect(() => {
     setRecords(load(KEYS.BUTCHERY))
@@ -24,6 +26,13 @@ export default function ButcheryCuts({ user, onBack }) {
   const wastageWeight = Math.max(0, raw - processedWeight)
   const yieldPct = raw > 0 ? ((processedWeight / raw) * 100).toFixed(1) : 0
 
+  const rawCostPKg = parseFloat(rawCostPerKg) || 0
+  const totalRawCost = raw * rawCostPKg
+  const cutsRevenue = cuts.reduce((s, c) => s + c.weight * (c.sellingPrice || 0), 0)
+  const wastageValue = wastageWeight * rawCostPKg
+  const grossProfit = cutsRevenue - totalRawCost
+  const marginPct = totalRawCost > 0 ? ((grossProfit / totalRawCost) * 100).toFixed(1) : 0
+
   const addCut = () => {
     if (!cutForm.weight || parseFloat(cutForm.weight) <= 0) { alert('Enter a valid weight'); return }
     if (!cutForm.name.trim() && !cutForm.productId) { alert('Enter a cut name or select a product'); return }
@@ -32,9 +41,10 @@ export default function ButcheryCuts({ user, onBack }) {
       productId: cutForm.productId || null,
       name: prod ? prod.name : cutForm.name,
       weight: parseFloat(cutForm.weight),
+      sellingPrice: parseFloat(cutForm.sellingPrice) || (prod ? prod.price : 0),
     }
     setCuts(prev => [...prev, newCut])
-    setCutForm({ productId: '', name: '', weight: '' })
+    setCutForm({ productId: '', name: '', weight: '', sellingPrice: '' })
   }
 
   const submitRecord = () => {
@@ -51,13 +61,20 @@ export default function ButcheryCuts({ user, onBack }) {
       rawProductId: rawProd.id,
       rawProductName: rawProd.name,
       rawWeight: raw,
+      rawCostPerKg: rawCostPKg,
+      totalRawCost,
       cuts,
       processedWeight,
       wastageWeight,
+      wastageValue,
       yieldPct: parseFloat(yieldPct),
+      cutsRevenue,
+      grossProfit,
+      marginPct: parseFloat(marginPct),
       processedBy: user.name,
       createdAt: new Date().toISOString(),
     }
+    logActivity(user, 'BUTCHERY_CUTS', { rawProduct: rawProd.name, rawWeight: raw, yieldPct, grossProfit })
 
     const allRecords = load(KEYS.BUTCHERY)
     save(KEYS.BUTCHERY, [...allRecords, record])
@@ -148,6 +165,13 @@ export default function ButcheryCuts({ user, onBack }) {
               </div>
 
               <div style={{ marginBottom: '14px' }}>
+                <label style={{ fontSize: '12px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Carcass Cost Price (R/kg)</label>
+                <input type="number" step="0.01" value={rawCostPerKg} onChange={e => setRawCostPerKg(e.target.value)} placeholder="e.g. 45.00"
+                  style={{ width: '100%', padding: '10px', backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', color: 'white', fontSize: '14px', boxSizing: 'border-box', outline: 'none' }} />
+                {rawCostPKg > 0 && raw > 0 && <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#f59e0b' }}>Total carcass cost: {R(totalRawCost)}</p>}
+              </div>
+
+              <div style={{ marginBottom: '14px' }}>
                 <label style={{ fontSize: '12px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Date</label>
                 <input type="date" value={date} onChange={e => setDate(e.target.value)}
                   style={{ width: '100%', padding: '10px', backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', color: 'white', fontSize: '14px', boxSizing: 'border-box', outline: 'none' }} />
@@ -179,10 +203,17 @@ export default function ButcheryCuts({ user, onBack }) {
                 <input type="text" value={cutForm.name} onChange={e => setCutForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. T-Bone, Fillet..."
                   style={{ width: '100%', padding: '10px', backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', color: 'white', fontSize: '14px', boxSizing: 'border-box', outline: 'none' }} />
               </div>
-              <div style={{ marginBottom: '12px' }}>
-                <label style={{ fontSize: '12px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Weight (kg) *</label>
-                <input type="number" step="0.1" value={cutForm.weight} onChange={e => setCutForm(f => ({ ...f, weight: e.target.value }))} placeholder="0.0"
-                  style={{ width: '100%', padding: '10px', backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', color: 'white', fontSize: '14px', boxSizing: 'border-box', outline: 'none' }} />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Weight (kg) *</label>
+                  <input type="number" step="0.1" value={cutForm.weight} onChange={e => setCutForm(f => ({ ...f, weight: e.target.value }))} placeholder="0.0"
+                    style={{ width: '100%', padding: '10px', backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', color: 'white', fontSize: '14px', boxSizing: 'border-box', outline: 'none' }} />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Selling Price (R/kg)</label>
+                  <input type="number" step="0.01" value={cutForm.sellingPrice} onChange={e => setCutForm(f => ({ ...f, sellingPrice: e.target.value }))} placeholder="0.00"
+                    style={{ width: '100%', padding: '10px', backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', color: 'white', fontSize: '14px', boxSizing: 'border-box', outline: 'none' }} />
+                </div>
               </div>
               <button onClick={addCut} style={{ width: '100%', padding: '10px', backgroundColor: '#0A6C6B', border: 'none', borderRadius: '8px', color: 'white', fontWeight: '700', cursor: 'pointer' }}>
                 + Add Cut
@@ -199,8 +230,14 @@ export default function ButcheryCuts({ user, onBack }) {
                 {[
                   { label: 'Raw weight in', value: `${raw}kg`, color: 'white' },
                   { label: 'Processed (cuts)', value: `${processedWeight.toFixed(2)}kg`, color: '#00C4A0' },
-                  { label: 'Wastage', value: `${wastageWeight.toFixed(2)}kg`, color: wastageWeight > raw * 0.3 ? '#dc2626' : '#f59e0b' },
+                  { label: 'Wastage', value: `${wastageWeight.toFixed(2)}kg (${R(wastageValue)})`, color: wastageWeight > raw * 0.3 ? '#dc2626' : '#f59e0b' },
                   { label: 'Yield %', value: `${yieldPct}%`, color: parseFloat(yieldPct) >= 75 ? '#4ade80' : '#f59e0b' },
+                  ...(rawCostPKg > 0 ? [
+                    { label: 'Total carcass cost', value: R(totalRawCost), color: '#f59e0b' },
+                    { label: 'Cuts revenue (sell)', value: R(cutsRevenue), color: '#00C4A0' },
+                    { label: 'Gross profit', value: R(grossProfit), color: grossProfit >= 0 ? '#4ade80' : '#dc2626' },
+                    { label: 'Margin %', value: `${marginPct}%`, color: parseFloat(marginPct) >= 20 ? '#4ade80' : '#f59e0b' },
+                  ] : []),
                 ].map(r => (
                   <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #0f172a', fontSize: '14px' }}>
                     <span style={{ color: '#94a3b8' }}>{r.label}</span>
@@ -221,18 +258,30 @@ export default function ButcheryCuts({ user, onBack }) {
                 <p style={{ color: '#64748b', textAlign: 'center', margin: '30px 0', fontSize: '14px' }}>No cuts added yet</p>
               ) : (
                 <>
-                  {cuts.map((cut, i) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #0f172a' }}>
-                      <div>
-                        <p style={{ margin: 0, fontWeight: '600', fontSize: '14px' }}>{cut.name}</p>
-                        {cut.productId && <p style={{ margin: '2px 0 0', fontSize: '11px', color: '#64748b' }}>Linked to inventory</p>}
+                  {cuts.map((cut, i) => {
+                    const cutRevenue = cut.weight * (cut.sellingPrice || 0)
+                    const cutCost = cut.weight * rawCostPKg
+                    const cutGP = cutRevenue - cutCost
+                    return (
+                      <div key={i} style={{ padding: '10px 0', borderBottom: '1px solid #0f172a' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div>
+                            <p style={{ margin: 0, fontWeight: '600', fontSize: '14px' }}>{cut.name}</p>
+                            {cut.productId && <p style={{ margin: '2px 0 0', fontSize: '11px', color: '#64748b' }}>Linked to inventory</p>}
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <span style={{ fontWeight: '700', color: '#00C4A0' }}>{cut.weight}kg</span>
+                            <button onClick={() => setCuts(prev => prev.filter((_, idx) => idx !== i))} style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '18px', lineHeight: 1 }}>×</button>
+                          </div>
+                        </div>
+                        {cut.sellingPrice > 0 && (
+                          <p style={{ margin: '3px 0 0', fontSize: '11px', color: cutGP >= 0 ? '#4ade80' : '#dc2626' }}>
+                            Sell: {R(cutRevenue)} | GP: {R(cutGP)}
+                          </p>
+                        )}
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ fontWeight: '700', color: '#00C4A0' }}>{cut.weight}kg</span>
-                        <button onClick={() => setCuts(prev => prev.filter((_, idx) => idx !== i))} style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '18px', lineHeight: 1 }}>×</button>
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                   <button onClick={submitRecord} style={{ width: '100%', marginTop: '16px', padding: '14px', backgroundColor: '#00C4A0', border: 'none', borderRadius: '10px', color: '#0f172a', fontWeight: '800', fontSize: '15px', cursor: 'pointer' }}>
                     Submit & Update Stock
                   </button>

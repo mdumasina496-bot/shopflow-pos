@@ -18,6 +18,11 @@ export const KEYS = {
   VOIDS: 'sf_voids',
   CREDIT_NOTES: 'sf_credit_notes',
   ONLINE_ORDERS: 'sf_online_orders',
+  ACTIVITY_LOG: 'sf_activity_log',
+  CHARCOAL: 'sf_charcoal',
+  MANUFACTURING: 'sf_manufacturing',
+  CARCASS: 'sf_carcass',
+  ABANDONED: 'sf_abandoned',
 }
 
 export const genId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
@@ -119,6 +124,19 @@ export function initData() {
   if (!localStorage.getItem(KEYS.MENU_ITEMS)) save(KEYS.MENU_ITEMS, SEED_MENU_ITEMS)
   if (!localStorage.getItem(KEYS.SETTINGS)) save(KEYS.SETTINGS, DEFAULT_SETTINGS)
   if (!localStorage.getItem(KEYS.ONLINE_ORDERS)) save(KEYS.ONLINE_ORDERS, [])
+  if (!localStorage.getItem(KEYS.ACTIVITY_LOG)) save(KEYS.ACTIVITY_LOG, [])
+  if (!localStorage.getItem(KEYS.CHARCOAL)) save(KEYS.CHARCOAL, [])
+  if (!localStorage.getItem(KEYS.ABANDONED)) save(KEYS.ABANDONED, [])
+  if (!localStorage.getItem(KEYS.MANUFACTURING)) save(KEYS.MANUFACTURING, [])
+  if (!localStorage.getItem(KEYS.CARCASS)) save(KEYS.CARCASS, [])
+}
+
+export function logActivity(user, action, details = {}) {
+  try {
+    const log = load(KEYS.ACTIVITY_LOG, [])
+    const entry = { id: genId(), timestamp: nowISO(), userId: user?.id || 'system', userName: user?.name || 'System', userRole: user?.role || 'system', action, details }
+    save(KEYS.ACTIVITY_LOG, [...log.slice(-4999), entry])
+  } catch { /* never crash on logging */ }
 }
 
 // ── Order number generator ─────────────────────────────────────────────────

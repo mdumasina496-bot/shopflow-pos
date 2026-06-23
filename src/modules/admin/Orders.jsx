@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Shell from '../../components/Shell'
-import { KEYS, load, save, R, genId, nowISO, today, nextOrderNumber, getSettings, printBraaiTicket, printReceipt } from '../../data'
+import { KEYS, load, save, R, genId, nowISO, today, nextOrderNumber, getSettings, printBraaiTicket, printReceipt, logActivity } from '../../data'
 
 const ORDER_TYPES = [
   { id: 'takeaway', label: '🥡 Takeaway' },
@@ -9,26 +9,34 @@ const ORDER_TYPES = [
   { id: 'delivery', label: '🚗 Delivery' },
 ]
 
+const VOID_REASONS = ['Wrong item added', 'Price error', 'Customer changed mind', 'Duplicate entry', 'Overring / Mistake', 'Other']
+
 function VoidModal({ item, onConfirm, onCancel }) {
   const [pwd, setPwd] = useState('')
+  const [reason, setReason] = useState(VOID_REASONS[0])
   const [err, setErr] = useState('')
 
   const verify = () => {
     const users = load(KEYS.USERS)
     const mgr = users.find(u => u.password === pwd && (u.role === 'manager' || u.role === 'owner') && u.active !== false)
-    if (mgr) { onConfirm(mgr.name) }
-    else { setErr('Incorrect manager password'); setPwd('') }
+    if (mgr) { onConfirm(mgr.name, reason) }
+    else { setErr('Incorrect manager/owner password'); setPwd('') }
   }
 
   return (
     <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: '20px' }}>
-      <div style={{ backgroundColor: '#1e293b', borderRadius: '16px', padding: '28px', maxWidth: '360px', width: '100%' }}>
+      <div style={{ backgroundColor: '#1e293b', borderRadius: '16px', padding: '28px', maxWidth: '380px', width: '100%' }}>
         <h3 style={{ margin: '0 0 6px', color: '#dc2626' }}>Void Item</h3>
-        <p style={{ margin: '0 0 20px', color: '#94a3b8', fontSize: '14px' }}>
+        <p style={{ margin: '0 0 16px', color: '#94a3b8', fontSize: '14px' }}>
           Voiding: <strong style={{ color: 'white' }}>{item.name}</strong> — {R(item.total)}<br />
-          Manager password required to approve.
+          Manager approval required.
         </p>
-        <label style={{ fontSize: '12px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Manager Password</label>
+        <label style={{ fontSize: '12px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Void Reason *</label>
+        <select value={reason} onChange={e => setReason(e.target.value)}
+          style={{ width: '100%', padding: '10px', backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', color: 'white', fontSize: '14px', marginBottom: '12px', boxSizing: 'border-box' }}>
+          {VOID_REASONS.map(r => <option key={r} value={r}>{r}</option>)}
+        </select>
+        <label style={{ fontSize: '12px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Manager / Owner Password</label>
         <input type="password" value={pwd} onChange={e => { setPwd(e.target.value); setErr('') }} autoFocus
           onKeyDown={e => e.key === 'Enter' && verify()}
           style={{ width: '100%', padding: '12px', backgroundColor: '#0f172a', border: `1px solid ${err ? '#dc2626' : '#334155'}`, borderRadius: '8px', color: 'white', fontSize: '16px', boxSizing: 'border-box', outline: 'none', marginBottom: '8px' }} />
@@ -37,6 +45,49 @@ function VoidModal({ item, onConfirm, onCancel }) {
           <button onClick={onCancel} style={{ flex: 1, padding: '12px', backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', color: '#94a3b8', cursor: 'pointer' }}>Cancel</button>
           <button onClick={verify} style={{ flex: 1, padding: '12px', backgroundColor: '#dc2626', border: 'none', borderRadius: '8px', color: 'white', fontWeight: '700', cursor: 'pointer' }}>Confirm Void</button>
         </div>
+      </div>
+    </div>
+  )
+}
+
+function CashierPasswordGate({ user, onVerified, onBack }) {
+  const [pwd, setPwd] = useState('')
+  const [err, setErr] = useState('')
+  const [overrideMode, setOverrideMode] = useState(false)
+
+  const verify = () => {
+    const users = load(KEYS.USERS)
+    if (overrideMode) {
+      const mgr = users.find(u => u.password === pwd && (u.role === 'manager' || u.role === 'owner') && u.active !== false)
+      if (mgr) { logActivity(user, 'ORDERS_ACCESS_OVERRIDE', { overriddenBy: mgr.name }); onVerified(mgr.name) }
+      else { setErr('Incorrect manager/owner password'); setPwd('') }
+    } else {
+      const self = users.find(u => u.id === user.id && u.password === pwd)
+      if (self) { logActivity(user, 'ORDERS_ACCESS', {}); onVerified(null) }
+      else { setErr('Incorrect password'); setPwd('') }
+    }
+  }
+
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <div style={{ backgroundColor: '#1e293b', borderRadius: '20px', padding: '32px', maxWidth: '380px', width: '100%' }}>
+        <p style={{ fontSize: '40px', textAlign: 'center', margin: '0 0 12px' }}>🔐</p>
+        <h2 style={{ textAlign: 'center', margin: '0 0 6px', fontSize: '18px' }}>Identity Verification</h2>
+        <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '13px', margin: '0 0 24px' }}>
+          {overrideMode ? 'Enter manager / owner password to override' : `Enter your password to access Orders, ${user.name.split(' ')[0]}`}
+        </p>
+        <input type="password" value={pwd} onChange={e => { setPwd(e.target.value); setErr('') }} autoFocus
+          onKeyDown={e => e.key === 'Enter' && verify()} placeholder="Password"
+          style={{ width: '100%', padding: '14px', backgroundColor: '#0f172a', border: `1px solid ${err ? '#dc2626' : '#334155'}`, borderRadius: '10px', color: 'white', fontSize: '18px', boxSizing: 'border-box', outline: 'none', marginBottom: '8px', textAlign: 'center', letterSpacing: '4px' }} />
+        {err && <p style={{ color: '#dc2626', fontSize: '13px', textAlign: 'center', margin: '0 0 12px' }}>{err}</p>}
+        <button onClick={verify} style={{ width: '100%', padding: '14px', backgroundColor: '#00C4A0', border: 'none', borderRadius: '10px', color: '#0f172a', fontWeight: '800', fontSize: '15px', cursor: 'pointer', marginBottom: '10px' }}>
+          Access Orders →
+        </button>
+        <button onClick={() => { setOverrideMode(v => !v); setPwd(''); setErr('') }}
+          style={{ width: '100%', padding: '10px', backgroundColor: 'transparent', border: '1px solid #334155', borderRadius: '8px', color: '#64748b', cursor: 'pointer', fontSize: '12px' }}>
+          {overrideMode ? 'Use my own password' : 'Manager override'}
+        </button>
+        <button onClick={onBack} style={{ width: '100%', padding: '8px', background: 'none', border: 'none', color: '#475569', cursor: 'pointer', fontSize: '12px', marginTop: '6px' }}>← Back</button>
       </div>
     </div>
   )
@@ -127,6 +178,8 @@ const STORE_CONFIG = {
 }
 
 export default function Orders({ user, onBack }) {
+  const needsGate = user.role === 'cashier'
+  const [verified, setVerified] = useState(!needsGate)
   const [products, setProducts] = useState([])
   const [allProducts, setAllProducts] = useState([])
   const [menuItems, setMenuItems] = useState([])
@@ -146,7 +199,28 @@ export default function Orders({ user, onBack }) {
   const [receipt, setReceipt] = useState(null)
   const [todaySales, setTodaySales] = useState(0)
   const [storeView, setStoreView] = useState(user.store === 'both' ? 'butchery' : user.store)
+  const cartRef = useRef([])
+  const extraCartRef = useRef([])
   const settings = getSettings()
+
+  useEffect(() => { cartRef.current = cart }, [cart])
+  useEffect(() => { extraCartRef.current = extraCart }, [extraCart])
+
+  useEffect(() => {
+    return () => {
+      const activeItems = cartRef.current.filter(i => !i.voided)
+      const activeExtras = extraCartRef.current.filter(i => !i.voided)
+      if (activeItems.length > 0 || activeExtras.length > 0) {
+        const allAbandoned = load(KEYS.ABANDONED, [])
+        save(KEYS.ABANDONED, [...allAbandoned, {
+          id: genId(), date: nowISO(), cashier: user.name, cashierId: user.id,
+          store: user.store === 'both' ? 'butchery' : user.store,
+          items: activeItems, extras: activeExtras,
+          total: [...activeItems, ...activeExtras].reduce((s, i) => s + i.total, 0),
+        }])
+      }
+    }
+  }, [])
 
   const storeConf = STORE_CONFIG[storeView] || STORE_CONFIG.butchery
 
@@ -220,14 +294,15 @@ export default function Orders({ user, onBack }) {
   const discountAmt = subtotal * (disc / 100)
   const total = subtotal - discountAmt
 
-  const handleVoidConfirm = (approvedBy) => {
+  const handleVoidConfirm = (approvedBy, reason) => {
     const { id, isExtra } = voidTarget
     const setter = isExtra ? setExtraCart : setCart
-    setter(prev => prev.map(c => c.id === id ? { ...c, voided: true, total: 0, voidedBy: approvedBy } : c))
+    setter(prev => prev.map(c => c.id === id ? { ...c, voided: true, total: 0, voidedBy: approvedBy, voidReason: reason } : c))
 
-    const voids = load(KEYS.VOIDS)
     const item = (isExtra ? extraCart : cart).find(c => c.id === id)
-    save(KEYS.VOIDS, [...voids, { id: genId(), date: nowISO(), itemName: item.name, itemTotal: item.total, cashier: user.name, approvedBy, orderId: null }])
+    const voids = load(KEYS.VOIDS)
+    save(KEYS.VOIDS, [...voids, { id: genId(), date: nowISO(), itemName: item.name, itemTotal: item.total, cashier: user.name, approvedBy, reason, orderId: null }])
+    logActivity(user, 'VOID', { item: item.name, amount: item.total, approvedBy, reason })
     setVoidTarget(null)
   }
 
@@ -269,8 +344,14 @@ export default function Orders({ user, onBack }) {
 
     setTodaySales(prev => prev + total)
     setReceipt(saleData)
+    logActivity(user, 'SALE_COMPLETE', { orderNumber: saleData.orderNumber, total, paymentMethod: payInfo.paymentMethod })
     setCart([]); setExtraCart([]); setDiscountPct(''); setCustomerName(''); setTableNumber(''); setCustomerPhone('')
     setShowPayment(false)
+  }
+
+  // ── Cashier identity gate ──────────────────────────────────────────────
+  if (!verified) {
+    return <CashierPasswordGate user={user} onVerified={() => setVerified(true)} onBack={onBack} />
   }
 
   // ── Not assigned screen ────────────────────────────────────────────────

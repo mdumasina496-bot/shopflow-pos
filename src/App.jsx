@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { KEYS, load, initData } from './data'
+import { KEYS, load, initData, logActivity } from './data'
 import AdminMenu from './modules/AdminMenu'
 import Inventory from './modules/Inventory'
 import GRV from './modules/GRV'
@@ -11,6 +11,7 @@ import Wastage from './modules/Wastage'
 import FCReport from './modules/FCReport'
 import Users from './modules/Users'
 import OnlineOrders from './modules/OnlineOrders'
+import StockManufacturing from './modules/StockManufacturing'
 
 const MENU = [
   { label: '🏪 Admin Menu',      screen: 'admin',         color: '#0A6C6B', roles: ['owner','manager','cashier'], stores: ['both','butchery','bottle'] },
@@ -21,6 +22,7 @@ const MENU = [
   { label: '🍺 Bottle Store',    screen: 'bottle',        color: '#b45309', roles: ['owner','manager'],           stores: ['both','bottle'] },
   { label: '📊 Reports',         screen: 'reports',       color: '#065f46', roles: ['owner','manager'],           stores: ['both','butchery','bottle'] },
   { label: '⚖️ Stock Count',     screen: 'stockcount',    color: '#0e7490', roles: ['owner','manager'],           stores: ['both','butchery','bottle'] },
+  { label: '🏭 Manufacturing',   screen: 'manufacturing', color: '#7c3aed', roles: ['owner','manager'],           stores: ['both','butchery','bottle'] },
   { label: '🗑️ Wastage Log',     screen: 'wastage',       color: '#9f1239', roles: ['owner','manager'],           stores: ['both','butchery','bottle'] },
   { label: '📈 FC Report',       screen: 'fcreport',      color: '#166534', roles: ['owner'],                     stores: ['both','butchery','bottle'] },
   { label: '👥 Users',           screen: 'users',         color: '#1e3a5f', roles: ['owner'],                     stores: ['both'] },
@@ -30,7 +32,7 @@ const MODULE_MAP = {
   admin: AdminMenu, inventory: Inventory, grv: GRV, butchery: ButcheryCuts,
   bottle: BottleStore, reports: Reports, stockcount: StockCount,
   wastage: Wastage, fcreport: FCReport, users: Users,
-  onlineorders: OnlineOrders,
+  onlineorders: OnlineOrders, manufacturing: StockManufacturing,
 }
 
 export default function App() {
@@ -55,12 +57,14 @@ export default function App() {
     if (user) {
       setCurrentUser(user)
       setScreen('dashboard')
+      logActivity(user, 'LOGIN', {})
     } else {
       alert('Invalid username or password.')
     }
   }
 
   const handleLogout = () => {
+    if (currentUser) logActivity(currentUser, 'LOGOUT', {})
     setScreen('login')
     setUsername('')
     setPassword('')
@@ -68,10 +72,12 @@ export default function App() {
   }
 
   const filteredMenu = currentUser
-    ? MENU.filter(item =>
-        item.roles.includes(currentUser.role) &&
-        item.stores.some(s => s === currentUser.store || currentUser.store === 'both')
-      )
+    ? MENU.filter(item => {
+        const roleOk = item.roles.includes(currentUser.role)
+        const storeOk = item.stores.some(s => s === currentUser.store || currentUser.store === 'both')
+        const allowed = !currentUser.allowedModules?.length || currentUser.allowedModules.includes(item.screen)
+        return roleOk && storeOk && allowed
+      })
     : []
 
   // Render active module
