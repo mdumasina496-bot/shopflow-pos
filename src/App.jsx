@@ -12,10 +12,12 @@ import FCReport from './modules/FCReport'
 import Users from './modules/Users'
 import OnlineOrders from './modules/OnlineOrders'
 import StockManufacturing from './modules/StockManufacturing'
+import OrderSearch from './modules/OrderSearch'
 
 const MENU = [
   { label: '🏪 Admin Menu',      screen: 'admin',         color: '#0A6C6B', roles: ['owner','manager','cashier'], stores: ['both','butchery','bottle'] },
   { label: '💬 Online Orders',   screen: 'onlineorders',  color: '#16a34a', roles: ['owner','manager','cashier'], stores: ['both','butchery','bottle'], badge: true },
+  { label: '🔍 Orders Search',  screen: 'ordersearch',   color: '#0e7490', roles: ['owner','manager'],           stores: ['both','butchery','bottle'] },
   { label: '📦 Inventory',       screen: 'inventory',     color: '#1e40af', roles: ['owner','manager'],           stores: ['both','butchery','bottle'] },
   { label: '📋 GRV',             screen: 'grv',           color: '#7c3aed', roles: ['owner','manager'],           stores: ['both','butchery','bottle'] },
   { label: '🥩 Butchery Cuts',   screen: 'butchery',      color: '#b91c1c', roles: ['owner','manager'],           stores: ['both','butchery'] },
@@ -32,7 +34,7 @@ const MODULE_MAP = {
   admin: AdminMenu, inventory: Inventory, grv: GRV, butchery: ButcheryCuts,
   bottle: BottleStore, reports: Reports, stockcount: StockCount,
   wastage: Wastage, fcreport: FCReport, users: Users,
-  onlineorders: OnlineOrders, manufacturing: StockManufacturing,
+  onlineorders: OnlineOrders, manufacturing: StockManufacturing, ordersearch: OrderSearch,
 }
 
 export default function App() {

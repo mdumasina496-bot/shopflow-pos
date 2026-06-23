@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import Shell from '../../components/Shell'
-import { KEYS, load, save, R, genId, fmtDate, fmtDateTime, today } from '../../data'
+import { KEYS, load, save, R, genId, fmtDate, fmtDateTime, today, logActivity } from '../../data'
 
 const NOTES = [200, 100, 50, 20, 10]
 const COINS = [5, 2, 1, 0.50, 0.20, 0.10, 0.05]
@@ -69,8 +69,27 @@ export default function StoreCashup({ user, onBack }) {
     }
   }
 
+  const getAbandonedForCashier = (cashierId) => {
+    return load(KEYS.ABANDONED, []).filter(a => a.cashierId === cashierId && a.date?.startsWith(today()))
+  }
+
   const submitBlind = () => {
     if (!assignmentId) { alert('Select a cashier/till assignment'); return }
+    const assignment = assignments.find(a => a.id === assignmentId)
+    if (assignment) {
+      const openAbandoned = getAbandonedForCashier(assignment.cashierId)
+      if (openAbandoned.length > 0) {
+        const totalUnpaid = openAbandoned.reduce((s, a) => s + a.total, 0)
+        const confirmed = window.confirm(
+          `⚠️ UNPAID ORDERS DETECTED\n\n` +
+          `${openAbandoned.length} abandoned order(s) totalling ${R(totalUnpaid)} were found for ${assignment.cashierName} today.\n\n` +
+          `These are orders that were started but never completed.\n\n` +
+          `A manager MUST investigate and account for these before cashup.\n\n` +
+          `Click OK to acknowledge and proceed to cashup, or Cancel to review abandoned orders first.`
+        )
+        if (!confirmed) return
+      }
+    }
     setStep('verify')
   }
 
@@ -108,6 +127,7 @@ export default function StoreCashup({ user, onBack }) {
     const all = load(KEYS.CASHUP)
     save(KEYS.CASHUP, [...all, entry])
     setCashups([...all, entry])
+    logActivity(user, 'CASHUP', { cashier: entry.cashierName, till: entry.tillName, variance: entry.variance, verifiedBy: entry.verifiedBy })
     setStep('done')
     setSelected(entry)
   }

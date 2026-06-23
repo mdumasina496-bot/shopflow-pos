@@ -4,7 +4,7 @@ import { KEYS, load, R, fmtDate, fmtDateTime, today } from '../../data'
 
 const startOfMonth = () => { const d = new Date(); d.setDate(1); return d.toISOString().slice(0, 10) }
 
-const SUB = ['Daily Sales', 'Hourly Sales', 'Monthly Sales', 'Invoices', 'Discounts', 'Voids / Overrings', 'Payment Breakdown']
+const SUB = ['Daily Sales', 'Hourly Sales', 'Monthly Sales', 'Invoices', 'Discounts', 'Voids / Overrings', 'Payment Breakdown', '⭐ Best Sellers', '📦 Restock Suggestions']
 
 export default function OrderReports({ user, onBack }) {
   const [active, setActive] = useState('Daily Sales')
@@ -13,10 +13,12 @@ export default function OrderReports({ user, onBack }) {
   const [storeFilter, setStoreFilter] = useState(user.store === 'both' ? 'all' : user.store)
   const [sales, setSales] = useState([])
   const [voids, setVoids] = useState([])
+  const [products, setProducts] = useState([])
 
   useEffect(() => {
     setSales(load(KEYS.SALES))
     setVoids(load(KEYS.VOIDS))
+    setProducts(load(KEYS.PRODUCTS))
   }, [])
 
   const filtered = sales.filter(s => {
@@ -96,6 +98,31 @@ export default function OrderReports({ user, onBack }) {
   const discounted = filtered.filter(s => s.discountAmt > 0)
   // Voids
   const filteredVoids = voids.filter(v => v.date?.slice(0,10) >= from && v.date?.slice(0,10) <= to)
+
+  // Best sellers — aggregate all line items across filtered sales
+  const itemMap = {}
+  filtered.forEach(s => {
+    ;[...(s.items || []), ...(s.extras || [])].filter(i => !i.voided).forEach(item => {
+      const key = item.name
+      if (!itemMap[key]) itemMap[key] = { name: key, qtySold: 0, revenue: 0, transactions: 0, store: s.store }
+      itemMap[key].qtySold += item.qty || 0
+      itemMap[key].revenue += item.total || 0
+      itemMap[key].transactions++
+    })
+  })
+  const bestSellers = Object.values(itemMap).sort((a, b) => b.revenue - a.revenue)
+  const maxBS = bestSellers[0]?.revenue || 1
+
+  // Restock suggestions — cross-reference best sellers with current stock
+  const restockSuggestions = bestSellers.map(bs => {
+    const prod = products.find(p => p.name === bs.name && p.active)
+    if (!prod) return null
+    const daysInPeriod = Math.max(1, (new Date(to) - new Date(from)) / (1000 * 60 * 60 * 24))
+    const dailyVelocity = bs.qtySold / daysInPeriod
+    const daysOfStock = dailyVelocity > 0 ? prod.stock / dailyVelocity : 999
+    const urgency = daysOfStock < 3 ? 'critical' : daysOfStock < 7 ? 'low' : daysOfStock < 14 ? 'medium' : 'ok'
+    return { ...bs, prod, dailyVelocity, daysOfStock, urgency, currentStock: prod.stock, minStock: prod.minStock }
+  }).filter(Boolean).sort((a, b) => a.daysOfStock - b.daysOfStock)
 
   return (
     <Shell title="Order Reports" onBack={onBack}>
@@ -242,6 +269,120 @@ export default function OrderReports({ user, onBack }) {
             </tbody>
             {filteredVoids.length > 0 && <tfoot><tr style={{ backgroundColor: '#7f1d1d22', borderTop: '2px solid #7f1d1d' }}><td colSpan={2} style={{ padding: '10px 14px', fontWeight: '800', color: '#fca5a5' }}>TOTAL VOIDED</td><td style={{ padding: '10px 14px', fontWeight: '800', color: '#dc2626' }}>{R(filteredVoids.reduce((s, v) => s + v.itemTotal, 0))}</td><td /><td /></tr></tfoot>}
           </table>
+        </div>
+      )}
+
+      {active === '⭐ Best Sellers' && (
+        <div>
+          <div style={{ backgroundColor: '#1e293b', borderRadius: '10px', padding: '12px 16px', marginBottom: '16px', fontSize: '12px', color: '#64748b' }}>
+            Showing top items sold in the selected period, ranked by revenue. Use date filter above to adjust the period.
+          </div>
+          {bestSellers.length === 0 ? (
+            <p style={{ color: '#64748b', textAlign: 'center', padding: '60px 0' }}>No sales data for this period</p>
+          ) : (
+            <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                <thead>
+                  <tr style={{ backgroundColor: '#0f172a' }}>
+                    {['#', 'Product', 'Qty Sold', 'Transactions', 'Revenue', 'Share'].map(h => (
+                      <th key={h} style={{ padding: '10px 14px', textAlign: 'left', color: '#64748b', fontWeight: '600', fontSize: '10px', textTransform: 'uppercase' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {bestSellers.map((item, i) => (
+                    <tr key={item.name} style={{ borderTop: i > 0 ? '1px solid #0f172a' : 'none', backgroundColor: i === 0 ? 'rgba(245,158,11,0.06)' : 'transparent' }}>
+                      <td style={{ padding: '10px 14px', fontWeight: '800', color: i === 0 ? '#f59e0b' : i === 1 ? '#94a3b8' : i === 2 ? '#b45309' : '#475569', fontSize: i < 3 ? '15px' : '13px' }}>
+                        {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`}
+                      </td>
+                      <td style={{ padding: '10px 14px', fontWeight: '600' }}>
+                        {item.name}
+                        <div style={{ height: '4px', backgroundColor: '#0f172a', borderRadius: '2px', marginTop: '4px', overflow: 'hidden' }}>
+                          <div style={{ height: '100%', width: `${(item.revenue / maxBS) * 100}%`, backgroundColor: i === 0 ? '#f59e0b' : '#00C4A0', borderRadius: '2px' }} />
+                        </div>
+                      </td>
+                      <td style={{ padding: '10px 14px', color: '#94a3b8' }}>{item.qtySold.toFixed(1)}</td>
+                      <td style={{ padding: '10px 14px', color: '#64748b' }}>{item.transactions}</td>
+                      <td style={{ padding: '10px 14px', fontWeight: '700', color: '#00C4A0' }}>{R(item.revenue)}</td>
+                      <td style={{ padding: '10px 14px', color: '#64748b', fontSize: '12px' }}>{totalRevenue > 0 ? `${((item.revenue / totalRevenue) * 100).toFixed(1)}%` : '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr style={{ backgroundColor: '#0f172a33', borderTop: '2px solid #334155' }}>
+                    <td colSpan={4} style={{ padding: '10px 14px', fontWeight: '700', fontSize: '12px', color: '#94a3b8' }}>TOTAL ({bestSellers.length} products)</td>
+                    <td style={{ padding: '10px 14px', fontWeight: '800', color: '#00C4A0' }}>{R(totalRevenue)}</td>
+                    <td />
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {active === '📦 Restock Suggestions' && (
+        <div>
+          <div style={{ backgroundColor: '#1e293b', borderRadius: '10px', padding: '12px 16px', marginBottom: '16px', fontSize: '12px', color: '#64748b' }}>
+            Based on your best sellers vs current stock levels. Products are ranked by how many days of stock remain at the current sales velocity.
+          </div>
+
+          {restockSuggestions.filter(s => s.urgency !== 'ok').length === 0 && (
+            <div style={{ backgroundColor: 'rgba(22,163,74,0.1)', border: '1px solid #16a34a', borderRadius: '10px', padding: '14px 18px', marginBottom: '14px', fontSize: '13px', color: '#4ade80' }}>
+              ✅ All popular products have sufficient stock for 14+ days at current sales velocity.
+            </div>
+          )}
+
+          {restockSuggestions.length === 0 ? (
+            <p style={{ color: '#64748b', textAlign: 'center', padding: '60px 0' }}>No sales data to generate suggestions. Run some sales first.</p>
+          ) : (
+            <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                <thead>
+                  <tr style={{ backgroundColor: '#0f172a' }}>
+                    {['Urgency', 'Product', 'Current Stock', 'Daily Sales', 'Days Left', 'Revenue (period)', 'Action'].map(h => (
+                      <th key={h} style={{ padding: '10px 14px', textAlign: 'left', color: '#64748b', fontWeight: '600', fontSize: '10px', textTransform: 'uppercase' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {restockSuggestions.map((item, i) => {
+                    const urgencyStyle = {
+                      critical: { bg: '#dc262633', color: '#fca5a5', label: '🔴 Critical' },
+                      low:      { bg: '#f59e0b22', color: '#fcd34d', label: '🟡 Low' },
+                      medium:   { bg: '#0e749022', color: '#67e8f9', label: '🔵 Medium' },
+                      ok:       { bg: '#16a34a22', color: '#4ade80', label: '🟢 OK' },
+                    }[item.urgency]
+                    return (
+                      <tr key={item.name} style={{ borderTop: i > 0 ? '1px solid #0f172a' : 'none', backgroundColor: item.urgency === 'critical' ? 'rgba(220,38,38,0.04)' : 'transparent' }}>
+                        <td style={{ padding: '10px 14px' }}>
+                          <span style={{ padding: '2px 8px', borderRadius: '10px', backgroundColor: urgencyStyle.bg, color: urgencyStyle.color, fontSize: '11px', fontWeight: '700' }}>
+                            {urgencyStyle.label}
+                          </span>
+                        </td>
+                        <td style={{ padding: '10px 14px', fontWeight: '600' }}>{item.name}</td>
+                        <td style={{ padding: '10px 14px', color: item.currentStock <= item.minStock ? '#dc2626' : '#94a3b8', fontWeight: item.currentStock <= item.minStock ? '700' : '400' }}>
+                          {item.currentStock.toFixed(1)} {item.prod?.unit}
+                          {item.currentStock <= item.minStock && <span style={{ marginLeft: '6px', fontSize: '10px', color: '#dc2626' }}>⚠️ BELOW MIN</span>}
+                        </td>
+                        <td style={{ padding: '10px 14px', color: '#64748b' }}>{item.dailyVelocity.toFixed(2)}/day</td>
+                        <td style={{ padding: '10px 14px', fontWeight: '700', color: item.daysOfStock < 3 ? '#dc2626' : item.daysOfStock < 7 ? '#f59e0b' : '#4ade80' }}>
+                          {item.daysOfStock > 99 ? '99+' : item.daysOfStock.toFixed(1)} days
+                        </td>
+                        <td style={{ padding: '10px 14px', color: '#00C4A0' }}>{R(item.revenue)}</td>
+                        <td style={{ padding: '10px 14px', fontSize: '11px', color: '#94a3b8' }}>
+                          {item.urgency === 'critical' ? '🚨 Order immediately' : item.urgency === 'low' ? '⚡ Order this week' : item.urgency === 'medium' ? '📋 Plan reorder' : '✅ Sufficient'}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+              <div style={{ padding: '12px 14px', backgroundColor: '#0f172a33', borderTop: '1px solid #334155', fontSize: '12px', color: '#64748b' }}>
+                💡 Tip: Products marked 🔴 Critical have less than 3 days of stock remaining. Order urgently.
+              </div>
+            </div>
+          )}
         </div>
       )}
 
