@@ -10,24 +10,27 @@ import StockCount from './modules/StockCount'
 import Wastage from './modules/Wastage'
 import FCReport from './modules/FCReport'
 import Users from './modules/Users'
+import OnlineOrders from './modules/OnlineOrders'
 
 const MENU = [
-  { label: '🏪 Admin Menu',     screen: 'admin',      color: '#0A6C6B', roles: ['owner','manager','cashier'], stores: ['both','butchery','bottle'] },
-  { label: '📦 Inventory',      screen: 'inventory',  color: '#1e40af', roles: ['owner','manager'],           stores: ['both','butchery','bottle'] },
-  { label: '📋 GRV',            screen: 'grv',        color: '#7c3aed', roles: ['owner','manager'],           stores: ['both','butchery','bottle'] },
-  { label: '🥩 Butchery Cuts',  screen: 'butchery',   color: '#b91c1c', roles: ['owner','manager'],           stores: ['both','butchery'] },
-  { label: '🍺 Bottle Store',   screen: 'bottle',     color: '#b45309', roles: ['owner','manager'],           stores: ['both','bottle'] },
-  { label: '📊 Reports',        screen: 'reports',    color: '#065f46', roles: ['owner','manager'],           stores: ['both','butchery','bottle'] },
-  { label: '⚖️ Stock Count',    screen: 'stockcount', color: '#0e7490', roles: ['owner','manager'],           stores: ['both','butchery','bottle'] },
-  { label: '🗑️ Wastage Log',    screen: 'wastage',    color: '#9f1239', roles: ['owner','manager'],           stores: ['both','butchery','bottle'] },
-  { label: '📈 FC Report',      screen: 'fcreport',   color: '#166534', roles: ['owner'],                     stores: ['both','butchery','bottle'] },
-  { label: '👥 Users',          screen: 'users',      color: '#1e3a5f', roles: ['owner'],                     stores: ['both'] },
+  { label: '🏪 Admin Menu',      screen: 'admin',         color: '#0A6C6B', roles: ['owner','manager','cashier'], stores: ['both','butchery','bottle'] },
+  { label: '💬 Online Orders',   screen: 'onlineorders',  color: '#16a34a', roles: ['owner','manager','cashier'], stores: ['both','butchery','bottle'], badge: true },
+  { label: '📦 Inventory',       screen: 'inventory',     color: '#1e40af', roles: ['owner','manager'],           stores: ['both','butchery','bottle'] },
+  { label: '📋 GRV',             screen: 'grv',           color: '#7c3aed', roles: ['owner','manager'],           stores: ['both','butchery','bottle'] },
+  { label: '🥩 Butchery Cuts',   screen: 'butchery',      color: '#b91c1c', roles: ['owner','manager'],           stores: ['both','butchery'] },
+  { label: '🍺 Bottle Store',    screen: 'bottle',        color: '#b45309', roles: ['owner','manager'],           stores: ['both','bottle'] },
+  { label: '📊 Reports',         screen: 'reports',       color: '#065f46', roles: ['owner','manager'],           stores: ['both','butchery','bottle'] },
+  { label: '⚖️ Stock Count',     screen: 'stockcount',    color: '#0e7490', roles: ['owner','manager'],           stores: ['both','butchery','bottle'] },
+  { label: '🗑️ Wastage Log',     screen: 'wastage',       color: '#9f1239', roles: ['owner','manager'],           stores: ['both','butchery','bottle'] },
+  { label: '📈 FC Report',       screen: 'fcreport',      color: '#166534', roles: ['owner'],                     stores: ['both','butchery','bottle'] },
+  { label: '👥 Users',           screen: 'users',         color: '#1e3a5f', roles: ['owner'],                     stores: ['both'] },
 ]
 
 const MODULE_MAP = {
   admin: AdminMenu, inventory: Inventory, grv: GRV, butchery: ButcheryCuts,
   bottle: BottleStore, reports: Reports, stockcount: StockCount,
   wastage: Wastage, fcreport: FCReport, users: Users,
+  onlineorders: OnlineOrders,
 }
 
 export default function App() {
@@ -35,8 +38,16 @@ export default function App() {
   const [password, setPassword] = useState('')
   const [screen, setScreen] = useState('login')
   const [currentUser, setCurrentUser] = useState(null)
+  const [newOrderCount, setNewOrderCount] = useState(0)
 
   useEffect(() => { initData() }, [])
+
+  useEffect(() => {
+    const refresh = () => setNewOrderCount(load(KEYS.ONLINE_ORDERS).filter(o => o.status === 'new').length)
+    refresh()
+    const interval = setInterval(refresh, 5000)
+    return () => clearInterval(interval)
+  }, [])
 
   const handleLogin = () => {
     const users = load(KEYS.USERS)
@@ -135,14 +146,22 @@ export default function App() {
 
           {/* Menu grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '14px', marginBottom: '24px' }}>
-            {filteredMenu.map(item => (
-              <div key={item.screen} onClick={() => setScreen(item.screen)}
-                style={{ backgroundColor: item.color, padding: '28px 16px', borderRadius: '14px', textAlign: 'center', cursor: 'pointer', fontWeight: '600', fontSize: '14px', boxShadow: '0 4px 12px rgba(0,0,0,0.3)', transition: 'transform 0.1s, filter 0.1s' }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.04)'; e.currentTarget.style.filter = 'brightness(1.15)' }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.filter = 'brightness(1)' }}>
-                {item.label}
-              </div>
-            ))}
+            {filteredMenu.map(item => {
+              const count = item.badge ? newOrderCount : 0
+              return (
+                <div key={item.screen} onClick={() => setScreen(item.screen)}
+                  style={{ backgroundColor: item.color, padding: '28px 16px', borderRadius: '14px', textAlign: 'center', cursor: 'pointer', fontWeight: '600', fontSize: '14px', boxShadow: '0 4px 12px rgba(0,0,0,0.3)', transition: 'transform 0.1s, filter 0.1s', position: 'relative' }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.04)'; e.currentTarget.style.filter = 'brightness(1.15)' }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.filter = 'brightness(1)' }}>
+                  {item.label}
+                  {count > 0 && (
+                    <span style={{ position: 'absolute', top: '8px', right: '8px', backgroundColor: '#dc2626', color: 'white', fontSize: '11px', fontWeight: '900', width: '20px', height: '20px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
+                      {count}
+                    </span>
+                  )}
+                </div>
+              )
+            })}
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

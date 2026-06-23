@@ -121,8 +121,14 @@ function PaymentModal({ total, onComplete, onCancel, allowSplit }) {
   )
 }
 
+const STORE_CONFIG = {
+  butchery: { label: '🥩 Butchery', color: '#b91c1c', light: 'rgba(185,28,28,0.12)', badge: '#fca5a5' },
+  bottle:   { label: '🍺 Bottle Store', color: '#b45309', light: 'rgba(180,83,9,0.12)', badge: '#fcd34d' },
+}
+
 export default function Orders({ user, onBack }) {
   const [products, setProducts] = useState([])
+  const [allProducts, setAllProducts] = useState([])
   const [menuItems, setMenuItems] = useState([])
   const [assignment, setAssignment] = useState(null)
   const [cart, setCart] = useState([])
@@ -139,14 +145,20 @@ export default function Orders({ user, onBack }) {
   const [showPayment, setShowPayment] = useState(false)
   const [receipt, setReceipt] = useState(null)
   const [todaySales, setTodaySales] = useState(0)
+  const [storeView, setStoreView] = useState(user.store === 'both' ? 'butchery' : user.store)
   const settings = getSettings()
 
+  const storeConf = STORE_CONFIG[storeView] || STORE_CONFIG.butchery
+
   useEffect(() => {
-    const activeStore = user.store === 'both' ? null : user.store
-    const prods = load(KEYS.PRODUCTS).filter(p => p.active && (!activeStore || p.store === activeStore))
+    const allProds = load(KEYS.PRODUCTS).filter(p => p.active)
+    setAllProducts(allProds)
+
+    const activeStore = user.store === 'both' ? storeView : user.store
+    const prods = allProds.filter(p => p.store === activeStore)
     setProducts(prods)
 
-    const mItems = load(KEYS.MENU_ITEMS).filter(m => m.available && (!activeStore || m.store === activeStore))
+    const mItems = load(KEYS.MENU_ITEMS).filter(m => m.available && m.store === (user.store === 'both' ? storeView : user.store))
     setMenuItems(mItems)
 
     if (settings.requireAssignment) {
@@ -163,7 +175,7 @@ export default function Orders({ user, onBack }) {
     const sales = load(KEYS.SALES)
     const t = today()
     setTodaySales(sales.filter(s => s.date?.startsWith(t) && (user.store === 'both' || s.store === user.store)).reduce((s, x) => s + x.total, 0))
-  }, [])
+  }, [storeView])
 
   const productCats = ['All', ...new Set(products.map(p => p.category))]
   const filteredProds = products.filter(p => {
@@ -225,7 +237,7 @@ export default function Orders({ user, onBack }) {
       id: genId(),
       orderNumber,
       date: nowISO(),
-      store: user.store === 'both' ? (products[0]?.store || 'butchery') : user.store,
+      store: user.store === 'both' ? storeView : user.store,
       cashier: user.name,
       cashierId: user.id,
       tillId: assignment?.tillId || null,
@@ -252,7 +264,8 @@ export default function Orders({ user, onBack }) {
       const item = activeCart.find(c => c.id === p.id)
       return item ? { ...p, stock: Math.max(0, p.stock - item.qty) } : p
     }))
-    setProducts(load(KEYS.PRODUCTS).filter(p => p.active && (user.store === 'both' ? true : p.store === user.store)))
+    const activeStore = user.store === 'both' ? storeView : user.store
+    setProducts(load(KEYS.PRODUCTS).filter(p => p.active && p.store === activeStore))
 
     setTodaySales(prev => prev + total)
     setReceipt(saleData)
@@ -327,6 +340,27 @@ export default function Orders({ user, onBack }) {
       {voidTarget && <VoidModal item={voidTarget} onConfirm={handleVoidConfirm} onCancel={() => setVoidTarget(null)} />}
       {showPayment && <PaymentModal total={total} allowSplit={settings.allowSplitPayment} onComplete={completeSale} onCancel={() => setShowPayment(false)} />}
 
+      {/* Store identity banner */}
+      <div style={{ backgroundColor: storeConf.light, border: `2px solid ${storeConf.color}`, borderRadius: '12px', padding: '10px 18px', marginBottom: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span style={{ fontSize: '20px' }}>{storeView === 'butchery' ? '🥩' : '🍺'}</span>
+          <div>
+            <p style={{ margin: 0, fontWeight: '800', fontSize: '15px', color: storeConf.badge }}>{storeConf.label.replace(/🥩 |🍺 /, '')}</p>
+            <p style={{ margin: 0, fontSize: '11px', color: '#64748b' }}>Cashier: {user.name}</p>
+          </div>
+        </div>
+        {user.store === 'both' && (
+          <div style={{ display: 'flex', gap: '6px' }}>
+            {['butchery', 'bottle'].map(s => (
+              <button key={s} onClick={() => { setStoreView(s); setCart([]); setExtraCart([]); setCatFilter('All') }}
+                style={{ padding: '7px 14px', borderRadius: '8px', border: `2px solid ${storeView === s ? STORE_CONFIG[s].color : '#334155'}`, backgroundColor: storeView === s ? STORE_CONFIG[s].light : '#0f172a', color: storeView === s ? STORE_CONFIG[s].badge : '#94a3b8', fontWeight: '700', cursor: 'pointer', fontSize: '12px' }}>
+                {STORE_CONFIG[s].label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Order type + customer details */}
       <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', padding: '14px 16px', marginBottom: '14px', display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ display: 'flex', gap: '6px' }}>
@@ -352,8 +386,8 @@ export default function Orders({ user, onBack }) {
         <div>
           {/* Tabs */}
           <div style={{ display: 'flex', gap: '4px', marginBottom: '12px', backgroundColor: '#1e293b', borderRadius: '10px', padding: '4px', width: 'fit-content' }}>
-            <button onClick={() => setTab('products')} style={{ padding: '7px 16px', borderRadius: '7px', border: 'none', backgroundColor: tab === 'products' ? '#0A6C6B' : 'transparent', color: tab === 'products' ? 'white' : '#64748b', fontWeight: '700', cursor: 'pointer', fontSize: '13px' }}>
-              🥩 Products
+            <button onClick={() => setTab('products')} style={{ padding: '7px 16px', borderRadius: '7px', border: 'none', backgroundColor: tab === 'products' ? storeConf.color : 'transparent', color: tab === 'products' ? 'white' : '#64748b', fontWeight: '700', cursor: 'pointer', fontSize: '13px' }}>
+              {storeConf.label}
             </button>
             {menuItems.length > 0 && (
               <button onClick={() => setTab('extras')} style={{ padding: '7px 16px', borderRadius: '7px', border: 'none', backgroundColor: tab === 'extras' ? '#b91c1c' : 'transparent', color: tab === 'extras' ? 'white' : '#64748b', fontWeight: '700', cursor: 'pointer', fontSize: '13px' }}>

@@ -81,6 +81,7 @@ export default function Settings({ user, onBack }) {
           {S('storeName', 'Store Name')}
           {S('storeAddress', 'Address')}
           {S('storePhone', 'Phone Number')}
+          {S('whatsappNumber', 'WhatsApp Number (e.g. 27821234567 — no + or spaces)')}
           {S('vatNumber', 'VAT Number')}
           {S('vatRate', 'VAT Rate (%)', 'number')}
           {S('receiptFooter', 'Receipt Footer Message')}
@@ -95,6 +96,7 @@ export default function Settings({ user, onBack }) {
           <div style={{ marginBottom: '24px' }}>{S('chisaNyamaMode', 'Enable Chisa Nyama / Braai mode (extras, braai tickets)', 'toggle')}</div>
           <div style={{ marginBottom: '24px' }}>{S('printBraaiOrders', 'Print braai ticket on dine-in orders', 'toggle')}</div>
           <div style={{ marginBottom: '24px' }}>{S('allowSplitPayment', 'Allow split payment (cash + card)', 'toggle')}</div>
+          <div style={{ marginBottom: '24px' }}>{S('onlineOrdersEnabled', 'Enable Online Orders module (WhatsApp & call orders)', 'toggle')}</div>
           {S('braaiAreaLabel', 'Braai Area Label (printed on braai tickets)')}
         </div>
       )}

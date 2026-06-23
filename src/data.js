@@ -17,6 +17,7 @@ export const KEYS = {
   SETTINGS: 'sf_settings',
   VOIDS: 'sf_voids',
   CREDIT_NOTES: 'sf_credit_notes',
+  ONLINE_ORDERS: 'sf_online_orders',
 }
 
 export const genId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
@@ -53,6 +54,11 @@ export const SEED_PRODUCTS = [
   { id: 'p8', name: 'Jameson 750ml', sku: 'BOT003', category: 'Spirits', store: 'bottle', price: 385, costPrice: 268, unit: 'each', stock: 15, minStock: 3, active: true },
   { id: 'p9', name: 'Savanna Dry 330ml', sku: 'BOT004', category: 'Cider', store: 'bottle', price: 28, costPrice: 18, unit: 'each', stock: 96, minStock: 24, active: true },
   { id: 'p10', name: 'Klipdrift Export 1L', sku: 'BOT005', category: 'Spirits', store: 'bottle', price: 225, costPrice: 155, unit: 'each', stock: 20, minStock: 5, active: true },
+  { id: 'p11', name: 'Chenin Blanc 750ml', sku: 'BOT006', category: 'Wine', store: 'bottle', price: 85, costPrice: 55, unit: 'each', stock: 24, minStock: 6, active: true },
+  { id: 'p12', name: 'Sauvignon Blanc 750ml', sku: 'BOT007', category: 'Wine', store: 'bottle', price: 95, costPrice: 62, unit: 'each', stock: 18, minStock: 6, active: true },
+  { id: 'p13', name: 'Shiraz 750ml', sku: 'BOT008', category: 'Wine', store: 'bottle', price: 110, costPrice: 72, unit: 'each', stock: 18, minStock: 6, active: true },
+  { id: 'p14', name: 'Rosé 750ml', sku: 'BOT009', category: 'Wine', store: 'bottle', price: 90, costPrice: 58, unit: 'each', stock: 12, minStock: 4, active: true },
+  { id: 'p15', name: 'Méthode Cap Classique', sku: 'BOT010', category: 'Wine', store: 'bottle', price: 165, costPrice: 110, unit: 'each', stock: 8, minStock: 3, active: true },
 ]
 
 export const SEED_MENU_ITEMS = [
@@ -101,6 +107,8 @@ export const DEFAULT_SETTINGS = {
   receiptFooter: 'Thank you for your business!',
   orderNumberPrefix: 'ORD',
   printBraaiOrders: true,
+  whatsappNumber: '',
+  onlineOrdersEnabled: true,
 }
 
 export function initData() {
@@ -110,6 +118,7 @@ export function initData() {
   if (!localStorage.getItem(KEYS.SHIFTS)) save(KEYS.SHIFTS, SEED_SHIFTS)
   if (!localStorage.getItem(KEYS.MENU_ITEMS)) save(KEYS.MENU_ITEMS, SEED_MENU_ITEMS)
   if (!localStorage.getItem(KEYS.SETTINGS)) save(KEYS.SETTINGS, DEFAULT_SETTINGS)
+  if (!localStorage.getItem(KEYS.ONLINE_ORDERS)) save(KEYS.ONLINE_ORDERS, [])
 }
 
 // ── Order number generator ─────────────────────────────────────────────────
