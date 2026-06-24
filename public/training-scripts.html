@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShopFlow POS — Video Narration Scripts</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f1f5f9; color: #1e293b; font-size: 14px; line-height: 1.7; }
+
+  .top-bar { background: #0f172a; padding: 14px 28px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; position: sticky; top: 0; z-index: 100; }
+  .top-bar .logo { color: #00C4A0; font-weight: 900; font-size: 17px; }
+  .tab-btn { padding: 8px 20px; border-radius: 8px; border: 2px solid #334155; background: #1e293b; color: #94a3b8; cursor: pointer; font-weight: 700; font-size: 13px; transition: all 0.15s; }
+  .tab-btn.active { border-color: #00C4A0; background: rgba(0,196,160,0.15); color: #00C4A0; }
+  .print-btn { margin-left: auto; padding: 8px 18px; border-radius: 8px; border: 1px solid #334155; background: transparent; color: #64748b; cursor: pointer; font-size: 13px; font-weight: 600; }
+
+  .script { display: none; max-width: 820px; margin: 32px auto; padding: 0 20px 60px; }
+  .script.visible { display: block; }
+
+  .script-header { background: white; border-radius: 16px; padding: 28px 32px; margin-bottom: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .script-header h1 { font-size: 24px; font-weight: 900; margin-bottom: 6px; }
+  .script-header .meta { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; }
+  .meta-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+
+  .scene { background: white; border-radius: 12px; padding: 24px 28px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .scene-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #f1f5f9; }
+  .scene-num { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; color: white; flex-shrink: 0; }
+  .scene-title { font-weight: 800; font-size: 16px; }
+  .scene-time { margin-left: auto; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 20px; background: #f1f5f9; color: #64748b; }
+
+  .action { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; padding: 10px 14px; margin: 10px 0; font-size: 13px; color: #92400e; display: flex; gap: 10px; align-items: flex-start; }
+  .action::before { content: "📸"; flex-shrink: 0; }
+  .action strong { font-weight: 700; }
+
+  .narration { padding: 12px 0; }
+  .narration p { color: #1e293b; margin-bottom: 10px; font-size: 15px; line-height: 1.75; }
+  .narration p:last-child { margin-bottom: 0; }
+
+  .pause { background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; padding: 6px 12px; font-size: 12px; color: #166534; font-weight: 600; margin: 8px 0; display: inline-block; }
+
+  .tip-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 14px; margin: 10px 0; font-size: 13px; color: #1e40af; display: flex; gap: 10px; }
+  .tip-box::before { content: "💡"; flex-shrink: 0; }
+
+  .total-bar { background: #0f172a; color: white; border-radius: 10px; padding: 14px 20px; margin-bottom: 24px; font-size: 14px; display: flex; gap: 24px; flex-wrap: wrap; }
+  .total-bar span { color: #94a3b8; }
+  .total-bar strong { color: #00C4A0; }
+
+  /* Role colours */
+  .cashier .scene-num { background: #0A6C6B; }
+  .cashier .scene-header { border-color: #e0f7f5; }
+  .cashier .script-header h1 { color: #0A6C6B; }
+
+  .manager .scene-num { background: #1e40af; }
+  .manager .scene-header { border-color: #eff6ff; }
+  .manager .script-header h1 { color: #1e40af; }
+
+  .owner .scene-num { background: #6d28d9; }
+  .owner .scene-header { border-color: #f5f3ff; }
+  .owner .script-header h1 { color: #6d28d9; }
+
+  @media print {
+    .top-bar { display: none; }
+    .script { display: block !important; page-break-after: always; }
+    .script:last-child { page-break-after: avoid; }
+    body { background: white; }
+    .scene { box-shadow: none; border: 1px solid #e2e8f0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <span class="logo">ShopFlow POS — Video Scripts</span>
+  <button class="tab-btn active" onclick="show('cashier',this)">🧾 Cashier (5 min)</button>
+  <button class="tab-btn" onclick="show('manager',this)">👔 Manager (8 min)</button>
+  <button class="tab-btn" onclick="show('owner',this)">🏪 Owner (10 min)</button>
+  <button class="print-btn" onclick="window.print()">🖨️ Print All Scripts</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- CASHIER SCRIPT -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="script cashier visible" id="cashier">
+  <div class="script-header">
+    <h1>🧾 Cashier Training Video Script</h1>
+    <p style="color:#64748b;margin-top:6px">Read the narration naturally — pause where marked. Follow the screen actions before speaking.</p>
+    <div class="meta">
+      <span class="meta-badge" style="background:#e0f7f5;color:#0A6C6B">Role: Cashier</span>
+      <span class="meta-badge" style="background:#f1f5f9;color:#64748b">Total Time: ~5 minutes</span>
+      <span class="meta-badge" style="background:#f1f5f9;color:#64748b">Scenes: 9</span>
+      <span class="meta-badge" style="background:#fffbeb;color:#92400e">Demo login: username — butchery_cashier / password — 1234</span>
+    </div>
+  </div>
+
+  <div class="total-bar">
+    <div><span>Before recording: </span><strong>Open the demo at https://mdumasina496-bot.github.io/shopflow-pos/ in full screen. Clear any previous session by refreshing the page.</strong></div>
+  </div>
+
+  <!-- SCENE 1 -->
+  <div class="scene cashier">
+    <div class="scene-header">
+      <div class="scene-num">1</div>
+      <div class="scene-title">Introduction</div>
+      <div class="scene-time">0:00 – 0:30</div>
+    </div>
+    <div class="action"><strong>Show:</strong> The ShopFlow POS login screen with the logo visible.</div>
+    <div class="narration">
+      <p>Welcome to ShopFlow POS — the point of sale system for your store, built by ZeHuWo.</p>
+      <p>In this video, I'm going to walk you through everything you need to know as a cashier — from logging in at the start of your shift, to processing sales, handling voids, and properly closing off at the end of the day.</p>
+      <p>Let's get started.</p>
+    </div>
+  </div>
+
+  <!-- SCENE 2 -->
+  <div class="scene cashier">
+    <div class="scene-header">
+      <div class="scene-num">2</div>
+      <div class="scene-title">Logging In</div>
+      <div class="scene-time">0:30 – 1:00</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Type the username <em>butchery_cashier</em> into the username field.</div>
+    <div class="narration"><p>When you arrive for your shift, open the ShopFlow POS app and you will see this login screen. Type in your username — every staff member has their own unique username.</p></div>
+    <div class="action"><strong>Action:</strong> Type the password <em>1234</em> and press LOG IN.</div>
+    <div class="narration"><p>Then enter your personal password and press LOG IN. Your password is private — never share it with anyone else, because all sales processed on your session will be linked to your name.</p></div>
+    <div class="action"><strong>Show:</strong> The dashboard with the cashier's name visible in the top right.</div>
+    <div class="narration"><p>You are now on your dashboard. You can see your name and role here in the top right corner. Only the modules your manager has allowed you to access will appear as tiles.</p></div>
+  </div>
+
+  <!-- SCENE 3 -->
+  <div class="scene cashier">
+    <div class="scene-header">
+      <div class="scene-num">3</div>
+      <div class="scene-title">Clocking In for Attendance</div>
+      <div class="scene-time">1:00 – 1:20</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Tap Admin Menu → Attendance.</div>
+    <div class="narration"><p>Before you start selling, clock in for the day. Go to Admin Menu and tap Attendance. Enter your password to record that you have arrived. Do this every single shift — at the start and at the end.</p></div>
+    <div class="action"><strong>Action:</strong> Enter password and clock in. Show the confirmation.</div>
+    <div class="narration"><p>Your clock-in time is now recorded. Your manager can see all attendance records from their dashboard.</p></div>
+  </div>
+
+  <!-- SCENE 4 -->
+  <div class="scene cashier">
+    <div class="scene-header">
+      <div class="scene-num">4</div>
+      <div class="scene-title">The Identity Verification Gate</div>
+      <div class="scene-time">1:20 – 1:55</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Go back to dashboard → Admin Menu → Orders. Show the Identity Verification screen appearing.</div>
+    <div class="narration"><p>Now let's go to the Orders screen — this is where all your selling happens. Tap Admin Menu, then tap Orders.</p></div>
+    <div class="action"><strong>Show:</strong> The identity verification screen with the password field.</div>
+    <div class="narration"><p>You will see this screen every single time you open Orders. This is the identity verification gate. It asks you to confirm your own password before you can process any sales.</p>
+    <p>This is an important accountability feature. It means that even if someone else is logged in on the device, only you — after entering your personal password — can ring sales under your name.</p></div>
+    <div class="action"><strong>Action:</strong> Enter password 1234 and tap Access Orders.</div>
+    <div class="narration"><p>Enter your password and press Access Orders. You are now in the Orders module and ready to sell.</p></div>
+    <div class="tip-box">If your manager has not assigned you to a till yet, you will see a "Not Assigned" screen. Ask your manager to open the Assign module and assign you before continuing.</div>
+  </div>
+
+  <!-- SCENE 5 -->
+  <div class="scene cashier">
+    <div class="scene-header">
+      <div class="scene-num">5</div>
+      <div class="scene-title">The Orders Screen — Overview</div>
+      <div class="scene-time">1:55 – 2:20</div>
+    </div>
+    <div class="action"><strong>Show:</strong> Full Orders screen. Highlight the store banner, product grid, cart on the right, and order type buttons at the top.</div>
+    <div class="narration"><p>This is the Orders screen. At the very top, you will see a coloured banner showing which store you are working in — in this case, the Butchery.</p>
+    <p>In the centre is your product grid. On the right side is your cart, where items build up as you add them. And at the top left are the order type buttons — Takeaway, Braai In, Call Order, and Delivery.</p></div>
+  </div>
+
+  <!-- SCENE 6 -->
+  <div class="scene cashier">
+    <div class="scene-header">
+      <div class="scene-num">6</div>
+      <div class="scene-title">Processing a Sale — Step by Step</div>
+      <div class="scene-time">2:20 – 3:40</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Tap the "Takeaway" order type button.</div>
+    <div class="narration"><p>Let's process a takeaway order. First, select your order type. For a customer walking in to buy meat, choose Takeaway.</p></div>
+    <div class="action"><strong>Action:</strong> Tap a product — e.g. Beef Steak — to add it to the cart.</div>
+    <div class="narration"><p>Now tap any product to add it to the cart. I'll tap Beef Steak. You can see it appear on the right side in the cart.</p></div>
+    <div class="action"><strong>Action:</strong> Use the + button to increase quantity, or type a weight for kg products.</div>
+    <div class="narration"><p>To change the quantity, use the plus and minus buttons in the cart. For products sold by the kilogram, you can type in the exact weight.</p></div>
+    <div class="action"><strong>Action:</strong> Tap the Extras tab and add an item like Pap Large.</div>
+    <div class="narration"><p>If the customer wants extras — like pap, rolls, or sauces — tap the Extras tab and add from there. Extras are items that go alongside the meat.</p></div>
+    <div class="action"><strong>Action:</strong> Show the total updating in the cart. Then tap Charge R___.</div>
+    <div class="narration"><p>As you add items, the total updates automatically at the bottom of the cart. When the customer is ready to pay, press the green Charge button showing the total amount.</p></div>
+    <div class="action"><strong>Action:</strong> On the payment screen, select Cash and type the tendered amount.</div>
+    <div class="narration"><p>The payment screen opens. Select Cash, Card, or Split. For cash, type the amount the customer hands you. The system automatically calculates the change — no mental arithmetic needed.</p></div>
+    <div class="action"><strong>Action:</strong> Press Complete. Show the receipt screen.</div>
+    <div class="narration"><p>Press Complete. The sale is done. You will see the receipt screen where you can print a receipt or a braai ticket. When ready, press New Order to start the next customer.</p></div>
+    <span class="pause">⏸ PAUSE — let the receipt screen sit for 2 seconds before moving on.</span>
+  </div>
+
+  <!-- SCENE 7 -->
+  <div class="scene cashier">
+    <div class="scene-header">
+      <div class="scene-num">7</div>
+      <div class="scene-title">Voiding an Item</div>
+      <div class="scene-time">3:40 – 4:20</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Add an item to the cart. Then press the VOID button next to it.</div>
+    <div class="narration"><p>Sometimes you will add the wrong item or a customer changes their mind. In this case, you need to void the item. Press the red VOID button next to that item in the cart.</p></div>
+    <div class="action"><strong>Show:</strong> The void modal with the reason dropdown and manager password field.</div>
+    <div class="narration"><p>A void screen will appear. First, select the reason — for example, "Wrong item added" or "Customer changed mind". Then, a manager password is required to approve the void.</p>
+    <p>This means you need to call your manager over. The manager will enter their password to confirm. This keeps a proper record of every item removed from a sale, and who approved it.</p></div>
+    <div class="action"><strong>Action:</strong> Enter manager password 1234 and confirm. Show the voided item in the cart with strikethrough.</div>
+    <div class="narration"><p>Once the manager approves, the item shows as voided in the cart — it will not be charged to the customer.</p></div>
+  </div>
+
+  <!-- SCENE 8 -->
+  <div class="scene cashier">
+    <div class="scene-header">
+      <div class="scene-num">8</div>
+      <div class="scene-title">Ending Your Shift</div>
+      <div class="scene-time">4:20 – 4:50</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Go back to dashboard. Show the Attendance module clock-out step.</div>
+    <div class="narration"><p>At the end of your shift, make sure your cart is empty — all orders must be completed or properly voided before you close off. Never leave items hanging in the cart.</p>
+    <p>Then go to Attendance and clock out with your password. This marks the end of your working hours.</p></div>
+    <div class="action"><strong>Action:</strong> Press Logout on the dashboard.</div>
+    <div class="narration"><p>Finally, press Logout on your dashboard. Your shift is now properly closed. Your manager will call you for cashup to count the cash in your till.</p></div>
+  </div>
+
+  <!-- SCENE 9 -->
+  <div class="scene cashier">
+    <div class="scene-header">
+      <div class="scene-num">9</div>
+      <div class="scene-title">Closing — Summary</div>
+      <div class="scene-time">4:50 – 5:10</div>
+    </div>
+    <div class="action"><strong>Show:</strong> The login screen again.</div>
+    <div class="narration"><p>And that is everything you need to know as a cashier on ShopFlow POS. To recap — clock in when you arrive, enter your password at the Orders gate, process sales, call your manager for any voids, clock out, and log off at the end of your shift.</p>
+    <p>If you are ever unsure about anything, open the Help and Training Guide from your dashboard — it has step-by-step instructions for every situation. Thank you for watching.</p></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- MANAGER SCRIPT -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="script manager" id="manager">
+  <div class="script-header">
+    <h1>👔 Manager Training Video Script</h1>
+    <p style="color:#64748b;margin-top:6px">Read the narration naturally — follow screen actions before speaking each section.</p>
+    <div class="meta">
+      <span class="meta-badge" style="background:#eff6ff;color:#1e40af">Role: Manager</span>
+      <span class="meta-badge" style="background:#f1f5f9;color:#64748b">Total Time: ~8 minutes</span>
+      <span class="meta-badge" style="background:#f1f5f9;color:#64748b">Scenes: 10</span>
+      <span class="meta-badge" style="background:#fffbeb;color:#92400e">Demo login: username — butchery_manager / password — 1234</span>
+    </div>
+  </div>
+
+  <div class="total-bar">
+    <div><span>Before recording: </span><strong>Log in as butchery_manager. Have the demo data loaded (it seeds automatically on first load).</strong></div>
+  </div>
+
+  <!-- SCENE 1 -->
+  <div class="scene manager">
+    <div class="scene-header">
+      <div class="scene-num">1</div>
+      <div class="scene-title">Introduction</div>
+      <div class="scene-time">0:00 – 0:30</div>
+    </div>
+    <div class="action"><strong>Show:</strong> Manager dashboard with tiles visible.</div>
+    <div class="narration">
+      <p>Welcome to the ShopFlow POS Manager Training guide. This video covers everything you need to run daily floor operations — from opening the shift and assigning cashiers, to processing the end-of-day cashup, receiving stock, and pulling daily reports.</p>
+      <p>As a manager, you have access to more of the system than cashiers, and your password is needed to approve important actions like voids and cashups. Let's walk through it all.</p>
+    </div>
+  </div>
+
+  <!-- SCENE 2 -->
+  <div class="scene manager">
+    <div class="scene-header">
+      <div class="scene-num">2</div>
+      <div class="scene-title">Start of Day — Assigning Cashiers to Tills</div>
+      <div class="scene-time">0:30 – 1:30</div>
+    </div>
+    <div class="action"><strong>Action:</strong> From dashboard → Admin Menu → Assign.</div>
+    <div class="narration"><p>The first thing you do every morning is assign your cashiers to their tills. This tells the system which cashier is working at which till, and how much float — starting cash — is in that till.</p>
+    <p>Go to Admin Menu and tap Assign.</p></div>
+    <div class="action"><strong>Action:</strong> Enter manager password to unlock Assign.</div>
+    <div class="narration"><p>Enter your manager password to open the assign screen.</p></div>
+    <div class="action"><strong>Action:</strong> Select a cashier from the dropdown, select a till, enter a float amount, and press Assign.</div>
+    <div class="narration"><p>Select the cashier's name, choose their till, and enter the float amount — this is the cash you are putting in the till to start the day with, for giving change. Then press Assign.</p>
+    <p>The cashier is now linked to their till. Repeat this for every cashier working today. Until you do this, a cashier will see a locked screen when they try to open Orders — so this must be done first.</p></div>
+    <div class="tip-box">If you have multiple cashiers, assign them one by one before the shop opens.</div>
+  </div>
+
+  <!-- SCENE 3 -->
+  <div class="scene manager">
+    <div class="scene-header">
+      <div class="scene-num">3</div>
+      <div class="scene-title">Approving Voids During the Day</div>
+      <div class="scene-time">1:30 – 2:15</div>
+    </div>
+    <div class="action"><strong>Show:</strong> Navigate to Orders and demonstrate a void being requested.</div>
+    <div class="narration"><p>During the day, cashiers may need to remove an item from a sale — for example, if they scanned the wrong product or the customer changed their mind. This is called a void.</p>
+    <p>When a cashier presses VOID on an item, they will call you over. You will see a screen showing the item, and a dropdown where the cashier has already selected the reason.</p></div>
+    <div class="action"><strong>Action:</strong> Enter the manager password in the void screen and confirm.</div>
+    <div class="narration"><p>Enter your manager password to approve. The item is then removed from the sale and the full record — the item, amount, reason, cashier, and your name — is saved in the system. You can review all voids later in the Reports section.</p>
+    <p>Always check that the reason makes sense before approving. If something doesn't look right, ask the cashier to explain before you enter your password.</p></div>
+  </div>
+
+  <!-- SCENE 4 -->
+  <div class="scene manager">
+    <div class="scene-header">
+      <div class="scene-num">4</div>
+      <div class="scene-title">Receiving Stock — GRV</div>
+      <div class="scene-time">2:15 – 3:15</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Navigate to GRV from dashboard. Show the GRV list screen.</div>
+    <div class="narration"><p>When stock arrives from a supplier, you must record it in the system immediately. This is done through the GRV module — Goods Received Voucher.</p>
+    <p>Go to GRV and press New GRV.</p></div>
+    <div class="action"><strong>Action:</strong> Fill in supplier name, date. Then add an item — select product, enter quantity and cost price.</div>
+    <div class="narration"><p>Enter the supplier name and the delivery date. Then add each item you received — select the product from the list, enter the quantity delivered, and the cost price per unit as shown on the supplier invoice.</p></div>
+    <div class="action"><strong>Action:</strong> Add a second item to show the process. Then press Submit GRV.</div>
+    <div class="narration"><p>Add all items from the delivery. When done, press Submit GRV and Update Stock. The system will instantly update the stock levels and the cost prices for all those products.</p></div>
+    <div class="action"><strong>Action:</strong> Switch to the Charcoal/Coal tab. Show the receive entry form.</div>
+    <div class="narration"><p>If you also received charcoal or coal for the braai, tap the Charcoal tab and record the bags received — including the supplier and cost. Then each day you braai, record how many bags were used under the "Used" entry. This prevents coal going missing without a record.</p></div>
+  </div>
+
+  <!-- SCENE 5 -->
+  <div class="scene manager">
+    <div class="scene-header">
+      <div class="scene-num">5</div>
+      <div class="scene-title">Managing Online Orders</div>
+      <div class="scene-time">3:15 – 4:00</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Go to Online Orders from dashboard. Show the badge count if present.</div>
+    <div class="narration"><p>The Online Orders module is where you manage orders that come in from WhatsApp or phone calls. If there is a red number badge on the tile, that means new orders are waiting.</p>
+    <p>Tap the tile to open it. New orders will trigger an audio alarm so you always know when one comes in.</p></div>
+    <div class="action"><strong>Action:</strong> Show an order. Tap Start Processing.</div>
+    <div class="narration"><p>When you see a new order, tap Start Processing to let the team know it is being prepared. You can also tap Reply on WhatsApp to send the customer an automatic confirmation message with their estimated wait time.</p></div>
+    <div class="action"><strong>Action:</strong> Navigate to Settings tab. Adjust the wait time slider.</div>
+    <div class="narration"><p>In the Settings tab, you can adjust the waiting time based on how busy the shop is. If you are rushed, set it to 45 or 60 minutes so customers have the right expectation. When it is quiet, bring it back down to 15 or 20 minutes.</p></div>
+  </div>
+
+  <!-- SCENE 6 -->
+  <div class="scene manager">
+    <div class="scene-header">
+      <div class="scene-num">6</div>
+      <div class="scene-title">End-of-Shift Cashup</div>
+      <div class="scene-time">4:00 – 5:20</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Admin Menu → Store Cashup → + New Cashup.</div>
+    <div class="narration"><p>At the end of every shift, you need to do a cashup for each cashier. This is how you confirm that the cash in the till matches what the system says should be there.</p>
+    <p>Go to Admin Menu, then Store Cashup, and press New Cashup.</p></div>
+    <div class="action"><strong>Action:</strong> Select a cashier/till from the dropdown.</div>
+    <div class="narration"><p>Select the cashier and till you are cashing up. The system will warn you if that cashier has any abandoned orders — orders that were started but never completed. If you see this warning, you must investigate before continuing.</p></div>
+    <div class="action"><strong>Action:</strong> Enter card total and petty cash. Show the denomination grid.</div>
+    <div class="narration"><p>Enter the card machine total from the day, and any petty cash that was used from the till for expenses. Then hand the grid to the cashier.</p>
+    <p>The cashier counts the physical cash in the till — note and coin by note and coin — and enters the quantities in the grid. Importantly, they cannot see what the system expects. This is called a blind count, and it prevents the cashier from just entering the "right" number without actually counting.</p></div>
+    <div class="action"><strong>Action:</strong> Press Submit for Verification. Enter manager password.</div>
+    <div class="narration"><p>Once the cashier has finished counting, press Submit for Verification. Enter your manager password to confirm.</p></div>
+    <div class="action"><strong>Show:</strong> The variance result on screen.</div>
+    <div class="narration"><p>The system now compares the counted cash to what it expected. If the variance is zero — perfect, the till balances. If it is negative, the cashier is short on cash. If it is positive, there is more cash than expected. Either way, you must investigate before dismissing the cashier.</p></div>
+    <span class="pause">⏸ PAUSE — let the cashup result show for 3 seconds.</span>
+  </div>
+
+  <!-- SCENE 7 -->
+  <div class="scene manager">
+    <div class="scene-header">
+      <div class="scene-num">7</div>
+      <div class="scene-title">Stock Count</div>
+      <div class="scene-time">5:20 – 6:20</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Navigate to Stock Count → Start New Count.</div>
+    <div class="narration"><p>Stock counts should be done regularly — at least once a week — to make sure the physical stock on your shelves matches what the system shows.</p>
+    <p>Go to Stock Count and press Start New Count. Choose the store and date.</p></div>
+    <div class="action"><strong>Show:</strong> The count entry table — note that System Qty and Variance columns are absent. Only the Count Qty input is shown.</div>
+    <div class="narration"><p>You will notice that the system quantity is hidden during counting. Staff only see the product name and a field to enter what they physically counted. This blind count prevents anyone from just copying the system number instead of actually counting.</p></div>
+    <div class="action"><strong>Action:</strong> Enter a few quantities. Press Submit Count → Apply and Save.</div>
+    <div class="narration"><p>Once counting is complete, press Submit Count. Choose Apply and Save to update the stock levels to the counted quantities. The system will then calculate the variances and show them in the report.</p>
+    <p>Only the owner can delete a stock count or see the full variance analysis during review.</p></div>
+  </div>
+
+  <!-- SCENE 8 -->
+  <div class="scene manager">
+    <div class="scene-header">
+      <div class="scene-num">8</div>
+      <div class="scene-title">Wastage Log</div>
+      <div class="scene-time">6:20 – 6:50</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Navigate to Wastage Log. Show adding a wastage entry.</div>
+    <div class="narration"><p>Whenever stock is spoiled, dropped, or written off for any reason, it must be recorded in the Wastage Log immediately. Go to Wastage Log, add the product, the quantity wasted, and the reason.</p>
+    <p>The system will deduct this from stock automatically. If you don't record wastage, your stock counts will always show shortages — and it can look like stock is going missing when it actually just spoiled.</p></div>
+  </div>
+
+  <!-- SCENE 9 -->
+  <div class="scene manager">
+    <div class="scene-header">
+      <div class="scene-num">9</div>
+      <div class="scene-title">Daily Reports to Check</div>
+      <div class="scene-time">6:50 – 7:40</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Navigate to Reports → Order Reports. Show the sub-tabs.</div>
+    <div class="narration"><p>At the end of each day, there are a few key reports you should check. Go to Reports and then Order Reports.</p></div>
+    <div class="action"><strong>Action:</strong> Click Daily Sales tab. Show the bar chart.</div>
+    <div class="narration"><p>Daily Sales shows today's total revenue and number of transactions at a glance.</p></div>
+    <div class="action"><strong>Action:</strong> Click Voids / Overrings tab.</div>
+    <div class="narration"><p>The Voids report shows every item that was voided today — who did it, how much it was for, and the reason. Review this every day. Frequent voids by the same cashier is a red flag.</p></div>
+    <div class="action"><strong>Action:</strong> Click Best Sellers tab.</div>
+    <div class="narration"><p>Best Sellers shows your top-selling products ranked by revenue. This helps you plan what to order more of.</p></div>
+    <div class="action"><strong>Action:</strong> Click Restock Suggestions tab. Show the urgency badges.</div>
+    <div class="narration"><p>And the Restock Suggestions tab is very powerful. It looks at how fast each product is selling and compares it to current stock levels. Products flagged in red are critical — they will run out within three days. Act on these immediately.</p></div>
+  </div>
+
+  <!-- SCENE 10 -->
+  <div class="scene manager">
+    <div class="scene-header">
+      <div class="scene-num">10</div>
+      <div class="scene-title">Closing — Summary</div>
+      <div class="scene-time">7:40 – 8:00</div>
+    </div>
+    <div class="action"><strong>Show:</strong> Manager dashboard.</div>
+    <div class="narration"><p>That covers everything for daily manager operations on ShopFlow POS. Assign cashiers first thing, approve voids during the day, receive stock when deliveries arrive, run cashup at shift end, and check your reports before you leave.</p>
+    <p>If you ever need a refresher, the Help and Training Guide in the app covers every step in detail. Thank you for watching.</p></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- OWNER SCRIPT -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="script owner" id="owner">
+  <div class="script-header">
+    <h1>🏪 Owner Training Video Script</h1>
+    <p style="color:#64748b;margin-top:6px">Read the narration naturally — follow screen actions before speaking each section.</p>
+    <div class="meta">
+      <span class="meta-badge" style="background:#f5f3ff;color:#6d28d9">Role: Owner</span>
+      <span class="meta-badge" style="background:#f1f5f9;color:#64748b">Total Time: ~10 minutes</span>
+      <span class="meta-badge" style="background:#f1f5f9;color:#64748b">Scenes: 10</span>
+      <span class="meta-badge" style="background:#fffbeb;color:#92400e">Demo login: username — owner / password — 1234</span>
+    </div>
+  </div>
+
+  <div class="total-bar">
+    <div><span>Before recording: </span><strong>Log in as owner. You will see all tiles — this is the most complete view of the system.</strong></div>
+  </div>
+
+  <!-- SCENE 1 -->
+  <div class="scene owner">
+    <div class="scene-header">
+      <div class="scene-num">1</div>
+      <div class="scene-title">Introduction</div>
+      <div class="scene-time">0:00 – 0:35</div>
+    </div>
+    <div class="action"><strong>Show:</strong> Owner dashboard with all tiles visible.</div>
+    <div class="narration">
+      <p>Welcome to the ShopFlow POS Owner Training guide. As the owner, you have full access to every part of the system. This video covers the most important owner-level features — setting up the system, managing your staff, monitoring activity, reading your financial reports, and running butchery operations.</p>
+      <p>You will notice that your dashboard shows more tiles than managers and cashiers — that is because you have the highest level of access. Let's go through everything you need to know.</p>
+    </div>
+  </div>
+
+  <!-- SCENE 2 -->
+  <div class="scene owner">
+    <div class="scene-header">
+      <div class="scene-num">2</div>
+      <div class="scene-title">First-Time Setup — Store Settings</div>
+      <div class="scene-time">0:35 – 1:20</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Admin Menu → Settings → Store Info tab.</div>
+    <div class="narration"><p>The first thing to do when setting up the system is go to Admin Menu, then Settings. Under the Store Info tab, fill in your store name, physical address, phone number, and VAT number if you are VAT registered.</p></div>
+    <div class="action"><strong>Action:</strong> Show the WhatsApp Number field and type a number.</div>
+    <div class="narration"><p>Also enter your WhatsApp business number here — this is the number customers will use to place orders. Enter it in international format with the country code: for South Africa that is 27, followed by the number without the leading zero. For example, 27821234567.</p></div>
+    <div class="action"><strong>Action:</strong> Switch to POS Settings tab. Show the toggles.</div>
+    <div class="narration"><p>In the POS Settings tab, you can turn features on or off for your business — like braai and chisa nyama mode, whether cashiers need to be assigned to a till before selling, and whether split payments are allowed.</p></div>
+    <div class="action"><strong>Action:</strong> Switch to Tills tab. Show the add till form.</div>
+    <div class="narration"><p>Under Tills, set up each till in your store with a name and store. Each till is then available for managers to assign cashiers to.</p></div>
+  </div>
+
+  <!-- SCENE 3 -->
+  <div class="scene owner">
+    <div class="scene-header">
+      <div class="scene-num">3</div>
+      <div class="scene-title">Managing Staff — Users & Access Control</div>
+      <div class="scene-time">1:20 – 2:30</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Navigate to Users from dashboard.</div>
+    <div class="narration"><p>The Users module is where you manage all staff accounts. Only you — as the owner — can access this. Go to Users from your dashboard.</p></div>
+    <div class="action"><strong>Action:</strong> Press + Add User. Fill in name, username, password, role (cashier), store (butchery).</div>
+    <div class="narration"><p>To add a new staff member, press Add User. Fill in their full name, a username they will use to log in, and a password. Set their role — owner, manager, or cashier — and which store they work in: butchery, bottle store, or both.</p></div>
+    <div class="action"><strong>Show:</strong> The Module Access checkbox grid at the bottom of the form.</div>
+    <div class="narration"><p>At the bottom you will see the Module Access section. By default, if you leave all boxes unticked, the staff member has access to everything their role normally allows. But if you want to restrict a specific person — for example, a cashier who should only use the Orders module and Attendance — you can tick only those boxes.</p>
+    <p>This gives you precise control over who sees what in the system. A cashier who cannot access Inventory cannot adjust stock levels. A manager who cannot access Reports cannot see financial data.</p></div>
+    <div class="action"><strong>Action:</strong> Show the Disable button on an existing user row.</div>
+    <div class="narration"><p>When a staff member leaves, press Disable on their account. Their history stays in the system for records — they just can no longer log in. To change someone's password, press Edit and enter a new password.</p></div>
+    <div class="tip-box">Never share your owner password. You are the only person who should access Users, Activity Monitor, and FC Report.</div>
+  </div>
+
+  <!-- SCENE 4 -->
+  <div class="scene owner">
+    <div class="scene-header">
+      <div class="scene-num">4</div>
+      <div class="scene-title">Activity Monitor — Watching Everything</div>
+      <div class="scene-time">2:30 – 3:30</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Admin Menu → Activity Monitor.</div>
+    <div class="narration"><p>The Activity Monitor is one of the most powerful tools available to you as the owner. It records every significant action taken in the system — every login, every sale completed, every item voided, every GRV submitted, every stock count, every manager override.</p>
+    <p>Go to Admin Menu and tap Activity Monitor. This is owner-only — your managers and cashiers cannot see this.</p></div>
+    <div class="action"><strong>Show:</strong> The log entries. Point out the timestamp, staff name, role, and action columns.</div>
+    <div class="narration"><p>Every entry shows the exact time, the staff member's name and role, and what they did. You can see sales being completed, voids being approved, stock being received, and more.</p></div>
+    <div class="action"><strong>Action:</strong> Use the staff member filter and the date filter to narrow results.</div>
+    <div class="narration"><p>Use the filters to investigate a specific person, a specific action type, or a specific date range. For example, if you want to see everything a particular cashier did last Tuesday, select their name and the date — and you have the full picture.</p></div>
+    <div class="action"><strong>Show:</strong> An "Orders Override" entry if present — or explain it.</div>
+    <div class="narration"><p>Pay special attention to entries labelled "Orders Override". This means a manager used their password to access the Orders screen on behalf of a cashier. This should be rare — if you see it happening often, investigate why cashiers are not using their own passwords.</p></div>
+  </div>
+
+  <!-- SCENE 5 -->
+  <div class="scene owner">
+    <div class="scene-header">
+      <div class="scene-num">5</div>
+      <div class="scene-title">Financial Reports — Understanding Your Business</div>
+      <div class="scene-time">3:30 – 5:00</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Navigate to FC Report from dashboard.</div>
+    <div class="narration"><p>The FC Report — Food Cost Report — is your most important financial health check as an owner. It is only available to you.</p>
+    <p>It shows you what percentage of your revenue is going back into buying stock. In butchery, a healthy food cost is typically below 35 percent. If your food cost is higher than that, it means either your buying prices are too high, your selling prices are too low, or stock is being wasted or going missing.</p></div>
+    <div class="action"><strong>Action:</strong> Navigate to Reports → Order Reports → Best Sellers tab.</div>
+    <div class="narration"><p>In the Order Reports section, the Best Sellers tab shows you exactly which products are generating the most revenue over any date range you choose. Use this to decide what to buy more of, what to promote, and what is not worth keeping on your shelves.</p></div>
+    <div class="action"><strong>Action:</strong> Click the Restock Suggestions tab. Show the red Critical items.</div>
+    <div class="narration"><p>The Restock Suggestions tab takes your best sellers and compares their sales velocity — how fast they are selling per day — against your current stock levels. It then tells you how many days of stock you have left for each product.</p>
+    <p>Products in red are critical — they will run out within three days. Products in yellow are low — order within the week. This report should guide your purchasing decisions every single day.</p></div>
+    <div class="action"><strong>Action:</strong> Navigate to Reports → Cashup Reports. Show the variance column.</div>
+    <div class="narration"><p>In the Cashup Reports, you can see every cashup that has been done and the variance for each one. If you are seeing consistent negative variances from the same cashier — meaning they are always short — that is a pattern you need to address.</p></div>
+  </div>
+
+  <!-- SCENE 6 -->
+  <div class="scene owner">
+    <div class="scene-header">
+      <div class="scene-num">6</div>
+      <div class="scene-title">Butchery Carcass Breakdown — Yield & Profit</div>
+      <div class="scene-time">5:00 – 6:10</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Navigate to Butchery Cuts → + New Record.</div>
+    <div class="narration"><p>If your butchery processes whole carcasses in-house — breaking down a whole beef, pork, or lamb into individual cuts — the Butchery Cuts module tracks exactly what you get out of each carcass and whether you are making money from it.</p>
+    <p>Press New Record to start.</p></div>
+    <div class="action"><strong>Action:</strong> Select a raw product, enter weight and cost price per kg.</div>
+    <div class="narration"><p>Select the raw material — for example, whole beef carcass — enter how many kilograms you are processing, and the cost price per kilogram you paid the supplier. This is your total carcass cost.</p></div>
+    <div class="action"><strong>Action:</strong> Add a few cuts with weight and selling price per kg.</div>
+    <div class="narration"><p>Now add each cut you get out of the carcass — the steak, ribs, mince, brisket — with the weight of each cut and the selling price per kilogram. As you add cuts, you will see the yield percentage building up on the right side.</p></div>
+    <div class="action"><strong>Show:</strong> The P&L summary — gross profit, margin %.</div>
+    <div class="narration"><p>The system automatically calculates your gross profit for this carcass — what you expect to earn from selling all the cuts, minus what you paid for the whole carcass. It also shows your margin percentage and the value of any wastage.</p>
+    <p>This tells you exactly whether your pricing is right. If your margin is below what you expect, either your cost price is too high or your selling prices need to go up.</p></div>
+  </div>
+
+  <!-- SCENE 7 -->
+  <div class="scene owner">
+    <div class="scene-header">
+      <div class="scene-num">7</div>
+      <div class="scene-title">Stock Manufacturing — Wors, Mince & More</div>
+      <div class="scene-time">6:10 – 7:00</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Navigate to Manufacturing → + New Batch.</div>
+    <div class="narration"><p>If your butchery makes products in-house — like boerewors, seasoned mince, or pap — use the Manufacturing module to record every batch. This tracks the raw materials that go in, the finished product that comes out, and the profit on each batch.</p>
+    <p>Press New Batch.</p></div>
+    <div class="action"><strong>Action:</strong> Name the output product (e.g. Boerewors), enter qty and selling price.</div>
+    <div class="narration"><p>Name the product you are making, enter how many kilograms you are producing, and the selling price per kilogram. You can also link it to an existing product in your inventory so stock updates automatically.</p></div>
+    <div class="action"><strong>Action:</strong> Add input materials — beef mince, spices, etc.</div>
+    <div class="narration"><p>Now add your input materials — the beef, spices, casing — selecting each from inventory and entering how much you are using. The system deducts these from your stock and calculates the total input cost.</p></div>
+    <div class="action"><strong>Show:</strong> P&L preview — output value vs input cost, gross profit.</div>
+    <div class="narration"><p>The profit and loss preview shows you exactly how much you are making per batch. This is very useful for pricing — if your boerewors is not making enough margin, you can see immediately whether the issue is your raw material cost or your selling price.</p></div>
+  </div>
+
+  <!-- SCENE 8 -->
+  <div class="scene owner">
+    <div class="scene-header">
+      <div class="scene-num">8</div>
+      <div class="scene-title">Stock Count — Owner Controls</div>
+      <div class="scene-time">7:00 – 7:45</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Navigate to Stock Count. Open a completed count.</div>
+    <div class="narration"><p>Stock counts are done by your managers and staff — but as the owner, you have special powers over them.</p>
+    <p>When you open a completed count report, you see the full variance detail — the difference between what was counted and what the system expected, and the value of any shortages in Rands. Staff cannot see this during the counting process.</p></div>
+    <div class="action"><strong>Show:</strong> The Apply to Stock and Delete Count buttons.</div>
+    <div class="narration"><p>You can apply the count to update live stock levels, or delete the entire count if it was done incorrectly and needs to be redone. Both actions require your owner password to confirm. Deleted counts cannot be recovered, so be certain before deleting.</p></div>
+    <div class="tip-box">Only you can apply or delete stock counts. This prevents staff from manipulating stock levels.</div>
+  </div>
+
+  <!-- SCENE 9 -->
+  <div class="scene owner">
+    <div class="scene-header">
+      <div class="scene-num">9</div>
+      <div class="scene-title">Online Orders — Setting Up for Customers</div>
+      <div class="scene-time">7:45 – 8:45</div>
+    </div>
+    <div class="action"><strong>Action:</strong> Go to Online Orders → Settings tab.</div>
+    <div class="narration"><p>The Online Orders module lets customers place orders via WhatsApp. To set it up, go to Online Orders and tap the Settings tab.</p></div>
+    <div class="action"><strong>Action:</strong> Show the online/offline toggle. Toggle it on.</div>
+    <div class="narration"><p>This toggle controls whether your store is accepting online orders. When it is green and set to Online, customers can see that you are open for orders. When it is red and Offline, it tells them you are not taking orders right now. Toggle this at the start and end of each day.</p></div>
+    <div class="action"><strong>Show:</strong> The customer order link. Press Copy Link.</div>
+    <div class="narration"><p>Further down, you will see your customer order link. This is a WhatsApp link that, when tapped, opens a WhatsApp chat with a pre-filled "I'd like to order" message. Copy this link and share it on your WhatsApp status, your Facebook page, or even print it as a QR code at your counter. Customers tap it, type their order, and it comes straight through to your Online Orders queue.</p></div>
+    <div class="action"><strong>Show:</strong> The internet speed test button. Run it.</div>
+    <div class="narration"><p>You can also run an internet speed test from here to make sure your connection is good enough for the system to work smoothly.</p></div>
+  </div>
+
+  <!-- SCENE 10 -->
+  <div class="scene owner">
+    <div class="scene-header">
+      <div class="scene-num">10</div>
+      <div class="scene-title">Closing — Summary</div>
+      <div class="scene-time">8:45 – 9:30</div>
+    </div>
+    <div class="action"><strong>Show:</strong> Owner dashboard with all tiles.</div>
+    <div class="narration">
+      <p>That covers the core owner features of ShopFlow POS. To recap — start by setting up your store information, adding staff with the correct roles and permissions, and loading your products into Inventory.</p>
+      <p>Day to day, check your Activity Monitor regularly to stay on top of what is happening in your business. Use the financial reports — especially Best Sellers and Restock Suggestions — to make better buying decisions. And use the Carcass Breakdown and Manufacturing modules to understand your real cost and profit on every product you process in-house.</p>
+      <p>ShopFlow POS is designed to give you complete visibility and control over your business. If you ever need a refresher on any feature, the Help and Training Guide is built right into the app — tap the Help tile on your dashboard at any time.</p>
+      <p>Thank you for watching, and welcome to ShopFlow POS — powered by ZeHuWo Pty Ltd.</p>
+    </div>
+    <span class="pause">⏸ PAUSE — hold on the dashboard for 3 seconds, then fade out.</span>
+  </div>
+</div>
+
+<script>
+  function show(id, btn) {
+    document.querySelectorAll('.script').forEach(s => s.classList.remove('visible'))
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
+    document.getElementById(id).classList.add('visible')
+    btn.classList.add('active')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+</script>
+</body>
+</html>
