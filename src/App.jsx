@@ -13,6 +13,7 @@ import Users from './modules/Users'
 import OnlineOrders from './modules/OnlineOrders'
 import StockManufacturing from './modules/StockManufacturing'
 import OrderSearch from './modules/OrderSearch'
+import HelpGuide from './modules/HelpGuide'
 
 const MENU = [
   { label: '🏪 Admin Menu',      screen: 'admin',         color: '#0A6C6B', roles: ['owner','manager','cashier'], stores: ['both','butchery','bottle'] },
@@ -28,13 +29,14 @@ const MENU = [
   { label: '🗑️ Wastage Log',     screen: 'wastage',       color: '#9f1239', roles: ['owner','manager'],           stores: ['both','butchery','bottle'] },
   { label: '📈 FC Report',       screen: 'fcreport',      color: '#166534', roles: ['owner'],                     stores: ['both','butchery','bottle'] },
   { label: '👥 Users',           screen: 'users',         color: '#1e3a5f', roles: ['owner'],                     stores: ['both'] },
+  { label: '📚 Help & Training', screen: 'help',          color: '#0f172a', roles: ['owner','manager','cashier'], stores: ['both','butchery','bottle'] },
 ]
 
 const MODULE_MAP = {
   admin: AdminMenu, inventory: Inventory, grv: GRV, butchery: ButcheryCuts,
   bottle: BottleStore, reports: Reports, stockcount: StockCount,
   wastage: Wastage, fcreport: FCReport, users: Users,
-  onlineorders: OnlineOrders, manufacturing: StockManufacturing, ordersearch: OrderSearch,
+  onlineorders: OnlineOrders, manufacturing: StockManufacturing, ordersearch: OrderSearch, help: HelpGuide,
 }
 
 export default function App() {

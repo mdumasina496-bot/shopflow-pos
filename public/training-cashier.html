@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShopFlow POS — Staff Training Cards</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f1f5f9; color: #1e293b; font-size: 13px; }
+
+  .page-select { display: flex; gap: 10px; padding: 16px 20px; background: #0f172a; flex-wrap: wrap; }
+  .page-select button { padding: 8px 18px; border-radius: 8px; border: 2px solid #334155; background: #1e293b; color: #94a3b8; cursor: pointer; font-weight: 700; font-size: 13px; }
+  .page-select button.active { border-color: #00C4A0; background: rgba(0,196,160,0.15); color: #00C4A0; }
+  .page-select .logo { color: #00C4A0; font-weight: 800; font-size: 16px; margin-right: auto; align-self: center; }
+
+  .card { display: none; max-width: 780px; margin: 24px auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
+  .card.visible { display: block; }
+
+  .card-header { padding: 22px 28px; color: white; }
+  .card-header h1 { font-size: 22px; font-weight: 900; margin: 0 0 4px; }
+  .card-header p { font-size: 13px; opacity: 0.85; margin: 0; }
+  .card-header .role-badge { display: inline-block; margin-top: 8px; padding: 3px 12px; border-radius: 20px; background: rgba(255,255,255,0.2); font-size: 12px; font-weight: 700; }
+
+  .cashier-header { background: linear-gradient(135deg, #0A6C6B, #00C4A0); }
+  .manager-header  { background: linear-gradient(135deg, #1e3a8a, #2563eb); }
+  .owner-header    { background: linear-gradient(135deg, #4c1d95, #7c3aed); }
+
+  .card-body { padding: 24px 28px; }
+
+  .section { margin-bottom: 22px; }
+  .section-title { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid; display: flex; align-items: center; gap: 8px; }
+  .section-title.teal  { color: #0A6C6B; border-color: #0A6C6B; }
+  .section-title.blue  { color: #1e40af; border-color: #1e40af; }
+  .section-title.purple { color: #6d28d9; border-color: #6d28d9; }
+
+  .steps { list-style: none; padding: 0; }
+  .steps li { display: flex; gap: 10px; margin-bottom: 8px; align-items: flex-start; }
+  .step-num { min-width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px; color: white; flex-shrink: 0; margin-top: 1px; }
+  .teal  .step-num { background: #0A6C6B; }
+  .blue  .step-num { background: #1e40af; }
+  .purple .step-num { background: #6d28d9; }
+  .steps li span { line-height: 1.5; color: #334155; }
+
+  .tip { border-radius: 8px; padding: 8px 12px; margin-top: 8px; margin-bottom: 8px; font-size: 12px; line-height: 1.5; display: flex; gap: 8px; }
+  .tip.info   { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
+  .tip.warn   { background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; }
+  .tip.danger { background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .quick-ref { background: #f8fafc; border-radius: 10px; padding: 14px; }
+  .quick-ref h4 { font-size: 12px; font-weight: 800; text-transform: uppercase; color: #64748b; margin-bottom: 10px; }
+  .quick-ref table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .quick-ref td { padding: 5px 6px; border-bottom: 1px solid #e2e8f0; }
+  .quick-ref td:first-child { color: #64748b; width: 40%; }
+  .quick-ref td:last-child { font-weight: 600; color: #1e293b; }
+
+  .footer { padding: 14px 28px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #94a3b8; }
+
+  @media print {
+    body { background: white; }
+    .page-select { display: none; }
+    .card { display: block !important; box-shadow: none; margin: 0; border-radius: 0; page-break-after: always; }
+    .card:last-child { page-break-after: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-select">
+  <span class="logo">ShopFlow POS — Training Cards</span>
+  <button class="active" onclick="show('cashier', this)">🧾 Cashier</button>
+  <button onclick="show('manager', this)">👔 Manager</button>
+  <button onclick="show('owner', this)">🏪 Owner</button>
+  <button onclick="window.print()" style="border-color:#00C4A0;color:#00C4A0">🖨️ Print All 3</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- CASHIER CARD -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div class="card visible" id="cashier">
+  <div class="card-header cashier-header">
+    <h1>ShopFlow POS — Cashier Quick Guide</h1>
+    <p>ZeHuWo Pty Ltd • Keep this at your till for reference</p>
+    <span class="role-badge">🧾 Cashier</span>
+  </div>
+  <div class="card-body">
+    <div class="two-col">
+      <div>
+        <div class="section teal">
+          <div class="section-title teal">🔑 Starting Your Shift</div>
+          <ul class="steps">
+            <li><span class="step-num">1</span><span>Log in with your <strong>username + password</strong></span></li>
+            <li><span class="step-num">2</span><span>Go to <strong>Admin Menu → Orders</strong></span></li>
+            <li><span class="step-num">3</span><span>Enter your <strong>password again</strong> on the identity screen — this links sales to you</span></li>
+            <li><span class="step-num">4</span><span>If "Not Assigned" shows → call your <strong>manager to assign you to a till</strong></span></li>
+            <li><span class="step-num">5</span><span>Go to <strong>Attendance → clock in</strong> with your password</span></li>
+          </ul>
+        </div>
+
+        <div class="section teal">
+          <div class="section-title teal">🛒 Processing a Sale</div>
+          <ul class="steps">
+            <li><span class="step-num">1</span><span>Choose order type: <strong>Takeaway / Braai In / Call / Delivery</strong></span></li>
+            <li><span class="step-num">2</span><span>Tap product cards to add to cart. Use search bar or category filters</span></li>
+            <li><span class="step-num">3</span><span>Adjust qty with <strong>+ / −</strong> buttons. For kg items, type the weight</span></li>
+            <li><span class="step-num">4</span><span>For extras (pap, achaar, rolls): tap the <strong>Extras tab</strong></span></li>
+            <li><span class="step-num">5</span><span>Enter <strong>Discount %</strong> if applicable</span></li>
+            <li><span class="step-num">6</span><span>Press <strong>Charge R___</strong> → select Cash / Card / Split</span></li>
+            <li><span class="step-num">7</span><span>For cash: enter amount tendered → change shown automatically</span></li>
+            <li><span class="step-num">8</span><span>Press <strong>Complete</strong> → print receipt if needed → <strong>New Order</strong></span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div>
+        <div class="section teal">
+          <div class="section-title teal">❌ Voiding an Item</div>
+          <ul class="steps">
+            <li><span class="step-num">1</span><span>Press <strong>VOID</strong> next to the item in the cart</span></li>
+            <li><span class="step-num">2</span><span>Select the <strong>reason</strong> from the dropdown</span></li>
+            <li><span class="step-num">3</span><span>Call your <strong>manager</strong> — they must enter their password to approve</span></li>
+          </ul>
+          <div class="tip warn">⚠️ You cannot void items yourself. Manager approval is always required.</div>
+        </div>
+
+        <div class="section teal">
+          <div class="section-title teal">🚪 Ending Your Shift</div>
+          <ul class="steps">
+            <li><span class="step-num">1</span><span>Complete or void all open items in cart — never leave items unpaid</span></li>
+            <li><span class="step-num">2</span><span>Wait for your manager for <strong>cashup</strong></span></li>
+            <li><span class="step-num">3</span><span><strong>Attendance → clock out</strong> with your password</span></li>
+            <li><span class="step-num">4</span><span>Press <strong>Logout</strong> on the dashboard</span></li>
+          </ul>
+        </div>
+
+        <div class="quick-ref">
+          <h4>⚡ Quick Reference</h4>
+          <table>
+            <tr><td>Out of stock item</td><td>Tell manager — cannot sell</td></tr>
+            <tr><td>Wrong order type</td><td>Tap correct type before payment</td></tr>
+            <tr><td>"Not Assigned" screen</td><td>Ask manager to assign your till</td></tr>
+            <tr><td>Identity verification</td><td>Enter YOUR own password</td></tr>
+            <tr><td>Manager override</td><td>Manager enters their password</td></tr>
+            <tr><td>Split payment</td><td>Cash amt + Card amt = Total</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <span>ShopFlow POS by ZeHuWo Pty Ltd</span>
+    <span>For help: open the app → Help & Training Guide</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- MANAGER CARD -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div class="card" id="manager">
+  <div class="card-header manager-header">
+    <h1>ShopFlow POS — Manager Quick Guide</h1>
+    <p>ZeHuWo Pty Ltd • Daily operations reference</p>
+    <span class="role-badge">👔 Manager</span>
+  </div>
+  <div class="card-body">
+    <div class="two-col">
+      <div>
+        <div class="section blue">
+          <div class="section-title blue">🌅 Start of Day</div>
+          <ul class="steps">
+            <li><span class="step-num">1</span><span>Log in → <strong>Admin Menu → Assign</strong></span></li>
+            <li><span class="step-num">2</span><span>Enter manager password → select cashier + till + float amount</span></li>
+            <li><span class="step-num">3</span><span>Press <strong>Assign</strong> — repeat for each cashier</span></li>
+            <li><span class="step-num">4</span><span>Check <strong>Online Orders</strong> — toggle store online if accepting orders</span></li>
+            <li><span class="step-num">5</span><span>Clock in via <strong>Attendance</strong></span></li>
+          </ul>
+        </div>
+
+        <div class="section blue">
+          <div class="section-title blue">💰 End-of-Shift Cashup</div>
+          <ul class="steps">
+            <li><span class="step-num">1</span><span><strong>Admin Menu → Store Cashup → + New Cashup</strong></span></li>
+            <li><span class="step-num">2</span><span>Select cashier/till — check for <strong>abandoned order warning</strong></span></li>
+            <li><span class="step-num">3</span><span>Enter card total + petty cash used</span></li>
+            <li><span class="step-num">4</span><span>Cashier counts cash by denomination (they cannot see expected total)</span></li>
+            <li><span class="step-num">5</span><span>Press <strong>Submit</strong> → enter your <strong>manager password</strong></span></li>
+            <li><span class="step-num">6</span><span>Review <strong>variance</strong> — investigate if not R0</span></li>
+          </ul>
+          <div class="tip warn">⚠️ Negative variance = cashier is short. Positive = more cash than expected. Both need explanation.</div>
+        </div>
+
+        <div class="section blue">
+          <div class="section-title blue">📋 Receiving Stock (GRV)</div>
+          <ul class="steps">
+            <li><span class="step-num">1</span><span><strong>GRV → + New GRV</strong> → enter supplier + date</span></li>
+            <li><span class="step-num">2</span><span>Add each item: product, qty received, cost price per unit</span></li>
+            <li><span class="step-num">3</span><span>Press <strong>Submit GRV & Update Stock</strong></span></li>
+            <li><span class="step-num">4</span><span>For charcoal: <strong>GRV → Charcoal/Coal tab</strong> → record as "Receive"</span></li>
+            <li><span class="step-num">5</span><span>Record charcoal used each braai day: same tab → "Used"</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div>
+        <div class="section blue">
+          <div class="section-title blue">📊 Daily Reports to Check</div>
+          <div class="quick-ref" style="margin-bottom:14px">
+            <table>
+              <tr><td>Today's revenue</td><td>Reports → Order Reports → Daily</td></tr>
+              <tr><td>Voids today</td><td>Reports → Order Reports → Voids</td></tr>
+              <tr><td>Best sellers</td><td>Reports → Order Reports → Best Sellers</td></tr>
+              <tr><td>Low stock alert</td><td>Reports → Order Reports → Restock</td></tr>
+              <tr><td>Cashup history</td><td>Reports → Cashup Reports</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="section blue">
+          <div class="section-title blue">⚖️ Stock Count</div>
+          <ul class="steps">
+            <li><span class="step-num">1</span><span><strong>Stock Count → Start New Count</strong></span></li>
+            <li><span class="step-num">2</span><span>Staff enter counted quantities only — <strong>system qty is hidden</strong></span></li>
+            <li><span class="step-num">3</span><span>Press <strong>Submit → Apply & Save</strong> to update stock</span></li>
+            <li><span class="step-num">4</span><span>Open the count report to see variances (owner can delete counts)</span></li>
+          </ul>
+          <div class="tip info">💡 Never tell staff what the system says before they finish counting.</div>
+        </div>
+
+        <div class="section blue">
+          <div class="section-title blue">💬 Online Orders</div>
+          <ul class="steps">
+            <li><span class="step-num">1</span><span>Red badge on dashboard = new orders waiting</span></li>
+            <li><span class="step-num">2</span><span>Tap <strong>Start Processing</strong> → <strong>Reply on WhatsApp</strong> to confirm</span></li>
+            <li><span class="step-num">3</span><span>When ready: tap <strong>Mark Done</strong></span></li>
+            <li><span class="step-num">4</span><span>Adjust wait time in <strong>Online Orders → Settings</strong> when busy</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <span>ShopFlow POS by ZeHuWo Pty Ltd</span>
+    <span>For help: open the app → Help & Training Guide</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- OWNER CARD -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div class="card" id="owner">
+  <div class="card-header owner-header">
+    <h1>ShopFlow POS — Owner Quick Guide</h1>
+    <p>ZeHuWo Pty Ltd • Full system control reference</p>
+    <span class="role-badge">🏪 Owner</span>
+  </div>
+  <div class="card-body">
+    <div class="two-col">
+      <div>
+        <div class="section purple">
+          <div class="section-title purple">👥 Managing Users</div>
+          <ul class="steps">
+            <li><span class="step-num">1</span><span><strong>Users → + Add User</strong>: name, username, password, role, store</span></li>
+            <li><span class="step-num">2</span><span>Tick <strong>Module Access</strong> to restrict which modules they see</span></li>
+            <li><span class="step-num">3</span><span>To disable staff: press <strong>Disable</strong> on their row</span></li>
+            <li><span class="step-num">4</span><span>To change password: <strong>Edit → New Password</strong> field</span></li>
+          </ul>
+          <div class="tip danger">🚨 Never share your owner password. Only you can access Users, Activity Monitor, and FC Report.</div>
+        </div>
+
+        <div class="section purple">
+          <div class="section-title purple">🔍 Activity Monitor (Audit Trail)</div>
+          <ul class="steps">
+            <li><span class="step-num">1</span><span><strong>Admin Menu → Activity Monitor</strong></span></li>
+            <li><span class="step-num">2</span><span>See every login, sale, void, GRV, stock count, and override</span></li>
+            <li><span class="step-num">3</span><span>Filter by <strong>staff member, action type, or date</strong></span></li>
+            <li><span class="step-num">4</span><span>"Orders Override" entries = manager accessed Orders for a cashier — investigate</span></li>
+          </ul>
+        </div>
+
+        <div class="section purple">
+          <div class="section-title purple">📊 Key Financial Reports</div>
+          <div class="quick-ref">
+            <table>
+              <tr><td>Food cost %</td><td>FC Report (owner only)</td></tr>
+              <tr><td>Gross profit/product</td><td>Reports → Stock → GP/FC</td></tr>
+              <tr><td>Best sellers</td><td>Reports → Order → Best Sellers</td></tr>
+              <tr><td>Restock needed</td><td>Reports → Order → Restock</td></tr>
+              <tr><td>Cashup variances</td><td>Reports → Cashup Reports</td></tr>
+              <tr><td>Void analysis</td><td>Reports → Order → Voids</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section purple">
+          <div class="section-title purple">⚖️ Stock Count — Owner Powers</div>
+          <ul class="steps">
+            <li><span class="step-num">1</span><span>Only YOU can see variance amounts during a count review</span></li>
+            <li><span class="step-num">2</span><span>To apply a count: open it → <strong>Apply to Stock</strong> → owner password</span></li>
+            <li><span class="step-num">3</span><span>To delete a wrong count: open it → <strong>Delete Count</strong> → owner password</span></li>
+          </ul>
+        </div>
+
+        <div class="section purple">
+          <div class="section-title purple">🥩 Carcass Breakdown</div>
+          <ul class="steps">
+            <li><span class="step-num">1</span><span><strong>Butchery Cuts → + New Record</strong></span></li>
+            <li><span class="step-num">2</span><span>Select raw material, enter weight + <strong>cost price per kg</strong></span></li>
+            <li><span class="step-num">3</span><span>Add each cut: name, weight, selling price per kg</span></li>
+            <li><span class="step-num">4</span><span>System shows: yield %, wastage value, gross profit, margin %</span></li>
+          </ul>
+        </div>
+
+        <div class="section purple">
+          <div class="section-title purple">🏭 Manufacturing (Wors / Mince / Pap)</div>
+          <ul class="steps">
+            <li><span class="step-num">1</span><span><strong>Manufacturing → + New Batch</strong></span></li>
+            <li><span class="step-num">2</span><span>Name output product + qty + selling price</span></li>
+            <li><span class="step-num">3</span><span>Add input materials → system deducts from stock</span></li>
+            <li><span class="step-num">4</span><span>System shows P&L (profit per batch)</span></li>
+          </ul>
+        </div>
+
+        <div class="section purple">
+          <div class="section-title purple">⚙️ First-Time Setup Checklist</div>
+          <div class="quick-ref">
+            <table>
+              <tr><td>Store info</td><td>Admin → Settings → Store Info</td></tr>
+              <tr><td>WhatsApp number</td><td>Settings → Store Info</td></tr>
+              <tr><td>Add all staff</td><td>Users → + Add User</td></tr>
+              <tr><td>Add products</td><td>Inventory → + Add Product</td></tr>
+              <tr><td>Set up tills</td><td>Settings → Tills</td></tr>
+              <tr><td>Enable braai mode</td><td>Settings → POS Settings</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <span>ShopFlow POS by ZeHuWo Pty Ltd</span>
+    <span>For help: open the app → Help & Training Guide</span>
+  </div>
+</div>
+
+<script>
+  function show(id, btn) {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('visible'))
+    document.querySelectorAll('.page-select button').forEach(b => b.classList.remove('active'))
+    document.getElementById(id).classList.add('visible')
+    btn.classList.add('active')
+  }
+</script>
+</body>
+</html>
